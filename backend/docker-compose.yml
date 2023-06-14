@@ -10,6 +10,8 @@ services:
       - MYSQL_PASSWORD=root
     volumes:
       - cardmarket:/var/lib/mysql
+    ports:
+      - 3306:3306
     restart: always
     tty: true
 #-------------------------------------------------------------------------#
