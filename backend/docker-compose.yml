@@ -5,15 +5,17 @@ services:
     image: mysql:8.0
     container_name: db
     environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=cardmarket
-      - MYSQL_PASSWORD=root
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
     volumes:
       - cardmarket:/var/lib/mysql
     ports:
       - 3306:3306
     restart: always
     tty: true
+    command: sh -c "mysqladmin -u root -p'root' password '$MYSQL_ROOT_PASSWORD'"
 #-------------------------------------------------------------------------#
   backend:
     build: ./
@@ -23,9 +25,10 @@ services:
     environment:
       - DB_HOST=db
       - DB_PORT=3306
-      - DB_USER=root
-      - DB_PASSWORD=root
-      - DB_NAME=cardmarket
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
     links:
       - db
     depends_on:
