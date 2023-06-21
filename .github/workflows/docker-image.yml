@@ -24,10 +24,26 @@ jobs:
   build:
     needs: test
     runs-on: self-hosted
+    env:
+      MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+      MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+      MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+      MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
+      MYSQL_PORT: ${{ secrets.MYSQL_PORT }}
+      MYSQL_USER: ${{ secrets.MYSQL_USER }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Set up environment variables
+        run: |
+          echo "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}" >> $GITHUB_ENV
+          echo "MYSQL_DATABASE=${MYSQL_DATABASE}" >> $GITHUB_ENV
+          echo "MYSQL_PASSWORD=${MYSQL_PASSWORD}" >> $GITHUB_ENV
+          echo "DB_HOST=${MYSQL_HOST}" >> $GITHUB_ENV
+          echo "DB_PORT=${MYSQL_PORT}" >> $GITHUB_ENV
+          echo "DB_USER=${MYSQL_USER}" >> $GITHUB_ENV
 
       - name: Build the Docker image
         run: |
