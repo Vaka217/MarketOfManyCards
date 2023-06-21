@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../../../MarketOfManyCards/backend/database/connection');
+const sequelize = require('../database/connection');
 const Set = require('./Set');
 
 const Card = sequelize.define('Card', {
