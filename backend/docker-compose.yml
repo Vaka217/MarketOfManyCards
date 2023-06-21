@@ -5,9 +5,9 @@ services:
     image: mysql:8.0
     container_name: db
     environment:
-      - MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
-      - MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
-      - MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+      - MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     volumes:
       - cardmarket:/var/lib/mysql
     ports:
@@ -21,11 +21,11 @@ services:
     ports:
       - 3000:3000
     environment:
-      - DB_HOST=${{ secrets.MYSQL_HOST }}
-      - DB_PORT=${{ secrets.MYSQL_PORT }}
-      - DB_USER=${{ secrets.MYSQL_USER }}
-      - DB_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
-      - DB_NAME=${{ secrets.MYSQL_DATABASE }}
+      - DB_HOST=${MYSQL_HOST}
+      - DB_PORT=${MYSQL_PORT}
+      - DB_USER=${MYSQL_USER}
+      - DB_PASSWORD=${MYSQL_ROOT_PASSWORD }}
+      - DB_NAME=${MYSQL_DATABASE}
     links:
       - db
     depends_on:
