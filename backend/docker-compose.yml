@@ -15,7 +15,6 @@ services:
       - 3306:3306
     restart: always
     tty: true
-    command: sh -c "mysqladmin -u root -p'root' password '$MYSQL_ROOT_PASSWORD'"
 #-------------------------------------------------------------------------#
   backend:
     build: ./
