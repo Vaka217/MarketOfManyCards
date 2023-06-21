@@ -1,35 +1,49 @@
 const Auction = require('../models/Auction');
 const User = require('../models/User');
+const { validationResult } = require('express-validator');
 
 const createAuction = async (req, res) => {
-  const { id } = req.params;
-  const { actual_bid, description, quantity } = req.body;
-
-  // Validación de datos
-  if (!actual_bid) {
-    return res.status(400).json({ error: 'Por favor, ingresa un precio' });
-  }
-
-  if (!description) {
-    return res.status(400).json({ error: 'Por favor, ingresa una descripción' });
-  }
-
-  if (!quantity) {
-    return res.status(400).json({ error: 'Por favor, ingresa una cantidad' });
-  }
-
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { id } = req.params;
+    const { actual_bid, description, quantity, start_time, end_time } = req.body;
+
     const user = await User.findByPk(id);
     if (!user) {
       return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    // Validación de fechas
+    const currentDate = new Date();
+    const startTime = new Date(start_time);
+    const endTime = new Date(end_time);
+
+    if (startTime < currentDate) {
+      return res.status(400).json({ error: 'La fecha de inicio no puede ser anterior a la fecha actual' });
+    }
+
+    if (endTime < currentDate) {
+      return res.status(400).json({ error: 'La fecha de finalización no puede ser anterior a la fecha actual' });
+    }
+
+    if (startTime >= endTime) {
+      return res.status(400).json({ error: 'La fecha de inicio debe ser anterior a la fecha de finalización' });
     }
 
     const auction = await Auction.create({
       actual_bid,
       description,
       quantity,
+      start_time,
+      end_time,
       created_at: new Date(),
       seller_id: id,
+      condition,
+      status: 'pending',
     });
 
     return res.json(auction);
@@ -38,7 +52,6 @@ const createAuction = async (req, res) => {
     return res.status(500).json({ error: 'Ha ocurrido un error al crear la subasta' });
   }
 };
-
 
 const updateAuctionStatus = async (auctionId) => {
   try {

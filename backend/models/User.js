@@ -7,6 +7,9 @@ const User = sequelize.define('User', {
     primaryKey: true,
     autoIncrement: true,
   },
+  profilePic: {
+    type: DataTypes.STRING, // DataTypes.TEXT si es una URL
+  },
   nickname: {
     type: DataTypes.STRING,
     allowNull: false,

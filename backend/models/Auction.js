@@ -9,6 +9,10 @@ const Auction = sequelize.define('Auction', {
     primaryKey: true,
     autoIncrement: true,
   },
+  condition: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
   start_time: {
     type: DataTypes.DATE,
     allowNull: false,

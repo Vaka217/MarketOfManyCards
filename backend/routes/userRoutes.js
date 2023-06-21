@@ -4,6 +4,8 @@ const User = require('../models/User');
 const Sale = require('../models/Sale');
 const auctionController = require('../controllers/auctionController');
 const Auction = require('../models/Auction');
+const Card = require('../models/Card');
+
 
 
 // Ruta para obtener todos los usuarios
@@ -107,12 +109,43 @@ router.delete('/deleteuser/:id', async (req, res) => {
 });
 
 // Ruta para crear una venta para un usuario
+// router.post('/createsales/:id/', async (req, res) => {
+//   const { id } = req.params;
+//   const { price, description, quantity } = req.body;
+
+//   // Validación de datos
+//   if (!price || !description || !quantity) {
+//     return res.status(400).json({ error: 'Por favor, completa todos los campos obligatorios' });
+//   }
+
+//   try {
+//     const user = await User.findByPk(id);
+//     if (!user) {
+//       return res.status(404).json({ error: 'Usuario no encontrado' });
+//     }
+
+//     const sale = await Sale.create({
+//       price,
+//       description,
+//       quantity,
+//       created_at: new Date(),
+//       status: 'pending',
+//       seller_id: id,
+//       condition,
+//     });
+
+//     return res.json(sale);
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ error: 'Ha ocurrido un error al crear la venta' });
+//   }
+// });
 router.post('/createsales/:id/', async (req, res) => {
   const { id } = req.params;
-  const { price, description, quantity } = req.body;
+  const { price, description, quantity, cardData, condition} = req.body;
 
   // Validación de datos
-  if (!price || !description || !quantity) {
+  if (!price || !description || !quantity || !cardData || !condition) {
     return res.status(400).json({ error: 'Por favor, completa todos los campos obligatorios' });
   }
 
@@ -122,6 +155,29 @@ router.post('/createsales/:id/', async (req, res) => {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
 
+    // Parsea la cadena JSON para convertirla en un objeto JavaScript
+    const cardInfo = JSON.parse(cardData);
+
+    // Extrae los valores necesarios del objeto
+    const { name, type, image, id: cardId, mana_cost, text, set } = cardInfo;
+
+    // Crea una nueva instancia de la carta en la base de datos
+    const card = await Card.findOrCreate({
+      where: { id: parseInt(cardId) },
+      defaults: {
+        name,
+        type,
+        image,
+        mana_cost,
+        text,
+        set,
+      },
+    });
+    
+
+    const cardInstance = card[0];
+
+    // datos de una venta 
     const sale = await Sale.create({
       price,
       description,
@@ -129,6 +185,8 @@ router.post('/createsales/:id/', async (req, res) => {
       created_at: new Date(),
       status: 'pending',
       seller_id: id,
+      card_id: cardInstance.id,
+      condition,
     });
 
     return res.json(sale);
@@ -137,6 +195,7 @@ router.post('/createsales/:id/', async (req, res) => {
     return res.status(500).json({ error: 'Ha ocurrido un error al crear la venta' });
   }
 });
+
 
 // Ruta para obtener todas las ventas
 router.get('/searchsales', async (req, res) => {
@@ -205,6 +264,20 @@ router.get('/searchauction/:id', async (req, res) => {
     res.status(500).json({ error: 'Error al obtener las ventas del usuario' });
   }
 });
+
+// modo cartas
+//obtener todas las cartas
+router.get('/searchcards', async (req, res) => {
+  try {
+    const cards = await Card.findAll();
+    res.json(cards);
+  } catch (error) {
+    console.error('Error al obtener las cartas:', error);
+    res.status(500).json({ error: 'Error al obtener las cartas' });
+  }
+});
+
+module.exports = router;
 
 // Modo subasta
 // Ruta para crear una subasta para un usuario

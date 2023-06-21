@@ -9,6 +9,10 @@ const Sale = sequelize.define('Sale', {
     primaryKey: true,
     autoIncrement: true,
   },
+  condition: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
   price: {
     type: DataTypes.DECIMAL(10, 2),
   },

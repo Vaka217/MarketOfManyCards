@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.router()
 const cardController = require('../controllers/cardController')
 
-router.get('/', cardController.getCards);
-router.post('/', cardController.saveCards);
+router.get('/searchcard', cardController.getCards);
+router.post('/createcard', cardController.saveCards);
 
 module.exports = router;
