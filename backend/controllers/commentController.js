@@ -1,4 +1,4 @@
-const comment = require('../../../MarketOfManyCards/backend/models/Comment')
+const comment = require('../models/Comment')
 
 /*Permite recibir todos los comentarios. Esto sé que tiene un problema importante
 (debería tomar todos los comentarios en lugar de recibir todos los de un post o venta en específico por su ID). 

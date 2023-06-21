@@ -1,4 +1,4 @@
-const Card = require('../../../Testing/Test1/models/Card');
+const Card = require('../models/Card');
 
 // Obtener todas las tarjetas
 const getAllCards = async (req, res) => {
