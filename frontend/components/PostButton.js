@@ -20,14 +20,19 @@ export function PostButton({ post, price, description, postType, resetEverything
     console.log('Card quality: ');
     console.log(cardQuality);
     setPostCheck(!postCheck);
-    axios.post('/createsales/:id/', JSON.stringify(postObject)).then(function (response) {
-      console.log(response);
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
-    console.log(JSON.stringify(postObject));
+    createPost(postObject);
   };
+  const createPost = async() => {
+    try {
+      const response = await axios.post('http://18.229.90.36:3000/createsales/1/', JSON.stringify(postObject));
+      const newPost = response.data;
+      console.log('Funciona lol: ', newPost)
+      return newPost;
+    } catch (error) {
+      console.error('Error lol: ', error.response.data);
+    }
+  }
+
   useEffect(() => {
     resetEverything();
   }, [postCheck]);
