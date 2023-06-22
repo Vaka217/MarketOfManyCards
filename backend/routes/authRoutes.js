@@ -11,7 +11,7 @@ router.post("/signup", async (req, res) => {
     const user = await User.create({ email, password, nickname, contact });
 
     const token = jwt.sign({ userId: user.id }, "MY_SECRET_KEY");
-    res.send({ token });
+    res.send({ userId: user.id, token });
   } catch (err) {
     return res.status(422).send(err.message);
   }
@@ -38,7 +38,7 @@ router.post("/signin", async (req, res) => {
     }
 
     const token = jwt.sign({ userId: user.id }, "MY_SECRET_KEY");
-    res.send({ token });
+    res.send({ userId: user.id, token });
   } catch (err) {
     return res.status(422).send({ error: "Invalid password or email" });
   }
