@@ -5,9 +5,9 @@ services:
     image: mysql:8.0
     container_name: db
     environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=cardmarket
+      - MYSQL_PASSWORD=root
     volumes:
       - cardmarket:/var/lib/mysql
     ports:
