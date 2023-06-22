@@ -6,11 +6,10 @@ import useDebounce from "../hooks/useDebounce";
 import Loading from "./Loading";
 import { getCardsSearchResults } from "../api/MtgAPI";
 
-export function CardAddMenu({ showModal, setShowModal, handleContentSizeChange, updateCurrentCards, cardsToPost, setCardsToPost }) {
+export function CardAddMenu({ showModal, setShowModal, handleContentSizeChange, currentCard, setCurrentCard }) {
   const [clicked, setClicked] = useState(false);
   const [term, setTerm] = useState("");
   const debouncedSearchValue = useDebounce(term, 1000);
-  const [cardsToPostKeysAsArray, setCardsToPostKeysAsArray] = useState([]);
   const [cards, setCards] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -19,13 +18,6 @@ export function CardAddMenu({ showModal, setShowModal, handleContentSizeChange, 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        if (debouncedSearchValue === "") {
-          const filteredDict = Object.fromEntries(Object.entries(cardsToPost).filter(([key, value]) => value !== "0"));
-          const keysArray = Object.keys(filteredDict);
-          const fromJson = keysArray.map(jsonString => JSON.parse(jsonString));
-          setCards(fromJson);
-          return;
-        }
         setIsLoading(true);
         const response = await getCardsSearchResults(debouncedSearchValue);
         const cardsAPI = response.map((card) => ({
@@ -50,39 +42,22 @@ export function CardAddMenu({ showModal, setShowModal, handleContentSizeChange, 
     fetchData();
   }, [debouncedSearchValue]);
 
-
-  useEffect(() => {
-    setCardDisplayArray(Object.entries(cardsToPost).map(([key, value]) => ([JSON.parse(key), value])));
-  }, [cardsToPost]);
-
-  const retrieveData = (key, value) => {
-    setCardsToPost(prevDictionary => {
-      return {
-        ...prevDictionary,
-        [JSON.stringify(key)]: value,
-      };
-    });
-  };
   const renderItem = ({ item }) => {
-    let savedNumber = "0";
-    if (cardsToPostKeysAsArray.some(card => card.id === item.id)) {
-      savedNumber = cardsToPost[JSON.stringify(item)];
-    }
     return (
       <SingleCardManager
         item={item}
         handleContentSizeChange={handleContentSizeChange}
-        savedNumber={savedNumber}
-        sendData={retrieveData}
+        addCard={addCard}
       />
     );
   }
-  useEffect(() => {
-    setCardsToPostKeysAsArray(Object.keys(cardsToPost).map((key) => JSON.parse(key)));
-  }, [cardsToPost]);
+
+  const addCard = (item) => {
+    console.log(item);
+    setCurrentCard(JSON.stringify(item));
+  };
 
   const closing = () => {
-    updateCurrentCards(cardsToPost);
     setShowModal(false);
   };
 
@@ -124,6 +99,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 22,
+    backgroundColor: 'blue',
   },
   modalView: {
     margin: 20,
