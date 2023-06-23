@@ -151,8 +151,7 @@ router.delete("/deleteuser/:id", async (req, res) => {
 //   }
 // });
 router.post("/createsales", async (req, res) => {
-  const { price, description, quantity, cardData, condition, userId } =
-    req.body;
+  const { price, description, quantity, cardData, condition, userId } = req.body;
 
   // Validación de datos
   if (!price || !description || !quantity || !cardData || !condition) {
@@ -171,35 +170,60 @@ router.post("/createsales", async (req, res) => {
     const cardInfo = JSON.parse(cardData);
 
     // Extrae los valores necesarios del objeto
-    const { name, type, image, id: cardId, mana_cost, text, set } = cardInfo;
+    const { id, name, type, image, manaCost, text, set, loyalty } = cardInfo;
 
-    // Crea una nueva instancia de la carta en la base de datos
-    const card = await Card.findOrCreate({
-      where: { id: parseInt(cardId) },
-      defaults: {
-        name,
-        type,
-        image,
-        mana_cost,
-        text,
-        set,
-      },
+    // Busca la instancia de la carta en la base de datos
+    const cardInstance = await Card.findOne({ where: { id: id } });
+
+    if (!cardInstance) {
+      // Si la carta no existe, crea una nueva instancia
+      const createdCard = await Card.create({
+        id: id,
+        name: name,
+        type: type,
+        mana_cost: manaCost,
+        text: text,
+        set: set,
+        card_image: image,
+        loyalty: loyalty,
+      });
+
+      // Asigna la nueva instancia de la carta al objeto cardInstance
+      cardInstance = createdCard;
+    }
+
+    // Busca dentro del usuario
+    const userProfile = await User.findOne({
+      where: { id: userId },
+      attributes: ["nickname", "profilePic"],
     });
 
-    const cardInstance = card[0];
-
-    // datos de una venta
+    // Crea una nueva venta en la base de datos
     const sale = await Sale.create({
-      price,
-      description,
-      quantity,
+      price: price,
+      description: description,
+      quantity: quantity,
       status: "pending",
       seller_id: userId,
       card_id: cardInstance.id,
-      condition,
+      condition: condition,
     });
 
-    return res.json(sale);
+    const response = {
+      sale: sale,
+      user: {
+        nickname: userProfile.nickname,
+        profilePic: userProfile.profilePic,
+      },
+      card: {
+        name: cardInstance.name,
+        image: cardInstance.card_image,
+      },
+    };
+
+    console.log(cardInfo);
+    return res.json(response);
+
   } catch (error) {
     console.error(error);
     return res
@@ -212,10 +236,40 @@ router.post("/createsales", async (req, res) => {
 router.get("/searchsales", async (req, res) => {
   try {
     const sales = await Sale.findAll({
-      limit: 10, // 10 ventas
-      order: [["createdAt", "DESC"]], // Ordenar por fecha de creación
+      limit: 10,
+      order: [["createdAt", "DESC"]],
     });
-    res.json(sales);
+
+    const response = await Promise.all(
+      sales.map(async (sale) => {
+        const { seller_id, card_id } = sale;
+
+        // busca dentro de user
+        const userProfile = await User.findOne({
+          where: { id: seller_id },
+          attributes: ["nickname", "profilePic"],
+        });
+
+        // busca dentro de cards
+        const card = await Card.findByPk(card_id, {
+          attributes: ["name", "card_image"],
+        });
+
+        return {
+          sale,
+          user: {
+            nickname: userProfile.nickname,
+            profilePic: userProfile.profilePic,
+          },
+          card: {
+            name: card.name,
+            image: card.card_image,
+          },
+        };
+      })
+    );
+
+    res.json(response);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error al obtener las ventas" });
@@ -240,19 +294,77 @@ router.get("/searchauctions", async (req, res) => {
 router.get("/searchsales/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const user = await User.findByPk(id, {
-      include: Sale,
-      limit: 10, // 10 ventas
-      order: [["createdAt", "DESC"]], // Ordenado por fecha de creación
-    });
+    const user = await User.findByPk(id);
     if (!user) {
       return res.status(404).json({ error: "Usuario no encontrado" });
     }
-    const sales = user.Sales;
-    res.json(sales);
+
+    const sales = await Sale.findAll({
+      where: { seller_id: id },
+      include: [{ model: User, attributes: ["nickname", "profilePic"] }, { model: Card, attributes: ["name", "card_image"] }],
+      limit: 10,
+      order: [["createdAt", "DESC"]],
+    });
+
+    const response = sales.map((sale) => {
+      const { User: userProfile, Card: card } = sale;
+
+      return {
+        sale,
+        user: {
+          nickname: userProfile.nickname,
+          profilePic: userProfile.profilePic,
+        },
+        card: {
+          name: card.name,
+          image: card.card_image,
+        },
+      };
+    });
+
+    res.json(response);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error al obtener las ventas del usuario" });
+  }
+});
+
+// Ruta para obtener las ventas de una carta específica
+router.get("/searchsalesbycard/:cardId", async (req, res) => {
+  const { cardId } = req.params;
+  try {
+    const card = await Card.findByPk(cardId);
+    if (!card) {
+      return res.status(404).json({ error: "Carta no encontrada" });
+    }
+
+    const sales = await Sale.findAll({
+      where: { card_id: cardId },
+      include: [{ model: User, attributes: ["nickname", "profilePic"] }],
+      limit: 10,
+      order: [["createdAt", "DESC"]],
+    });
+
+    const response = sales.map((sale) => {
+      const { User: userProfile } = sale;
+
+      return {
+        sale,
+        user: {
+          nickname: userProfile.nickname,
+          profilePic: userProfile.profilePic,
+        },
+        card: {
+          name: card.name,
+          image: card.card_image,
+        },
+      };
+    });
+
+    res.json(response);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al obtener las ventas de la carta" });
   }
 });
 

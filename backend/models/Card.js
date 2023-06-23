@@ -47,6 +47,9 @@ const Card = sequelize.define('Card', {
   multiverse_ID: {
     type: DataTypes.INTEGER,
   },
+  card_image: {
+    type: DataTypes.STRING,
+  },
 });
 
 Set.hasMany(Card, { foreignKey: 'set_id' });
