@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "test-cardmarket-2",
+    "slug": "test-cardmarket-2",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "userInterfaceStyle": "light"
+    },
+    "android": {
+      "userInterfaceStyle": "light",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.vakon.testcardmarket2"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "a44b9e1f-6c59-40d6-8d6b-f01f3cedc136"
+      }
+    }
+  }
+}
