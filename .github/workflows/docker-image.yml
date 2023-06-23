@@ -38,14 +38,14 @@ jobs:
 
       - name: Set up environment variables
         run: |
-          echo "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}" >> $GITHUB_ENV
-          echo "MYSQL_DATABASE=${MYSQL_DATABASE}" >> $GITHUB_ENV
-          echo "MYSQL_PASSWORD=${MYSQL_PASSWORD}" >> $GITHUB_ENV
-          echo "DB_HOST=${MYSQL_HOST}" >> $GITHUB_ENV
-          echo "DB_PORT=${MYSQL_PORT}" >> $GITHUB_ENV
-          echo "DB_USER=${MYSQL_USER}" >> $GITHUB_ENV
+          cd backend
+          echo "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}" >> .env
+          echo "MYSQL_DATABASE=${MYSQL_DATABASE}" >> .env
+          echo "MYSQL_PASSWORD=${MYSQL_PASSWORD}" >> .env
+          echo "DB_HOST=${MYSQL_HOST}" >> .env
+          echo "DB_PORT=${MYSQL_PORT}" >> .env
+          echo "DB_USER=${MYSQL_USER}" >> .env
 
       - name: Build the Docker image
         run: |
-          cd backend
           sudo docker-compose up -d --build --force-recreate
