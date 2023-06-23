@@ -1,23 +1,37 @@
-import { View, StatusBar, ScrollView } from "react-native";
-import { useState } from "react";
+import React, { useState } from "react";
+import { SafeAreaView, Image, View } from "react-native";
 import SearchBar from "../components/SearchBar";
-import { CardDisplay } from "../components/Cards";
+import PostList from "../components/PostList";
+import CardList from "../components/CardList";
+import useDebounce from "../hooks/useDebounce";
 
-export function HomeScreen() {
+const HomeScreen = () => {
+  const [term, setTerm] = useState("");
   const [clicked, setClicked] = useState(false);
-  const [searchPhrase, setSearchPhrase] = useState("");
+
+  const debouncedSearchValue = useDebounce(term, 1000);
 
   return (
-    <ScrollView>
-      <View style={{ paddingTop: StatusBar.currentHeight }}>
+    <SafeAreaView className="flex-1 bg-sky-900 dark:bg-sky-950">
+      <View className="flex-row items-center mx-3 mt-9 mb-3">
+        <Image
+          source={require("../assets/WhiteLogo.png")}
+          className="mr-3 h-11 w-10"
+        />
         <SearchBar
+          searchTerm={term}
+          setSearchTerm={(newTerm) => setTerm(newTerm)}
           clicked={clicked}
           setClicked={setClicked}
-          searchPhrase={searchPhrase}
-          setSearchPhrase={setSearchPhrase}
         />
-        <CardDisplay filter={searchPhrase} />
       </View>
-    </ScrollView>
+      {term === "" ? (
+        <PostList />
+      ) : (
+        <CardList searchTerm={debouncedSearchValue} />
+      )}
+    </SafeAreaView>
   );
-}
+};
+
+export default HomeScreen;

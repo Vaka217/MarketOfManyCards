@@ -1,26 +1,21 @@
 import React from "react";
-import { View, TextInput, StyleSheet } from "react-native";
+import { View, TextInput, StyleSheet, Image } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 
 const SearchBar = ({ searchTerm, clicked, setSearchTerm, setClicked }) => {
   return (
-    <>
-      <View style={styles.container}>
+      <View style={styles.inputContainer} className="flex-1 flex-row items-center bg-slate-100 h-11 rounded-lg">
         <FontAwesome
           name="search"
           size={20}
-          style={{
-            marginHorizontal: 10,
-            alignSelf: "center",
-            color: "rgb(12 74 110)",
-          }}
+          style={styles.searchIcon}
         />
         <TextInput
           value={searchTerm}
           onChangeText={setSearchTerm}
           autoCorrect={false}
           placeholder="Search your wanted card!"
-          style={{ flex: 1 }}
+          className="flex-1"
           onFocus={() => {
             setClicked(true);
           }}
@@ -33,27 +28,25 @@ const SearchBar = ({ searchTerm, clicked, setSearchTerm, setClicked }) => {
             name="close"
             size={20}
             color="black"
-            style={{ padding: 10 }}
+            style={styles.closeIcon}
             onPress={() => {
               setSearchTerm("");
             }}
           />
         )}
       </View>
-    </>
   );
 };
 
 export default SearchBar;
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "rgb(241 245 249)",
-    height: 40,
-    borderRadius: 8,
-    marginHorizontal: 12,
-    flexDirection: "row",
-    marginTop: 35,
-    marginBottom: 12,
+  searchIcon: {
+    marginHorizontal: 10,
+    alignSelf: "center",
+    color: "rgb(12 74 110)",
+  },
+  closeIcon: {
+    padding: 10,
   },
 });

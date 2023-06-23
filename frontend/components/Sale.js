@@ -1,20 +1,34 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
   Image,
   TouchableWithoutFeedback,
-  Animated,
-  Button,
+  Pressable,
   StyleSheet,
-  TouchableHighlight,
-  FlatList
+  FlatList,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
+import MyButton from "./myButton";
+import WhatsAppButton from "./WhatsAppButton";
 
-const Sale = ({ name, pic, condition, quantity, price, card }) => {
+const Sale = ({
+  name,
+  pic,
+  condition,
+  quantity,
+  price,
+  card,
+  profile,
+  description,
+}) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [selectedValue, setSelectedValue] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
+
+  const handleVisible = () => {
+    setIsVisible(!isVisible);
+  };
 
   const handlePress = () => {
     setIsExpanded(!isExpanded);
@@ -31,83 +45,108 @@ const Sale = ({ name, pic, condition, quantity, price, card }) => {
 
   return (
     <View className="px-3 w-full">
-      <View className="bg-slate-100 rounded-lg mt-3 shadow-md shadow-black p-1.5 flex-1 h-24 flex-row">
-        <Image
-          source={{ uri: pic }}
-          className="w-20 h-20 rounded-full"
-        />
-        <View className="flex-1 ml-1">
-          <View className="rounded-lg mb-0.5 bg-sky-900 ml-1 flex-1 items-center justify-center">
-            <Text
-              className="text-xs font-bold text-slate-100"
-              numberOfLines={1}
-            >
-              {name}
-            </Text>
-          </View>
-          <View className="rounded-lg bg-sky-900 ml-1 mb-0.5 flex-1 items-center justify-center">
-            <Text
-              className="text-xs font-bold text-slate-100"
-              numberOfLines={1}
-            >
-              {card}
-            </Text>
-          </View>
-          <View className="flex-row flex ml-1">
-            <View className="justify-center flex-col w-3/6 items-center">
-              <Text className="text-xs font-bold text-slate-100 rounded-lg bg-sky-900 w-full text-center mb-0.5">
-                {condition}
-              </Text>
-              <TouchableWithoutFeedback onPress={handlePress}>
-                <View className="flex-row justify-between border-sky-900 border-2 rounded-lg">
-                  <Text className="text-lg font-bold text-sky-900 text-center flex-1">
-                    {selectedValue}
-                  </Text>
-                  <FontAwesome
-                    name="sort-down"
-                    size={24}
-                    color="rgb(12 74 110)"
-                    style={styles.icon}
-                  />
-                  <Text className="text-lg font-bold text-slate-100 text-center flex-1 bg-sky-900 rounded-lg">
-                    {quantity}
+      <TouchableWithoutFeedback onPress={handleVisible}>
+        <View className="bg-slate-100 rounded-lg mt-3 shadow-md shadow-black p-1.5">
+          <View className="flex-row">
+            <View className="h-32 w-24">
+              <Image
+                source={{ uri: pic }}
+                className="h-full"
+                resizeMode="contain"
+              />
+            </View>
+            <View className="flex-1">
+              <View className="rounded-lg bg-sky-900 ml-1 mb-0.5 flex-1 justify-center items-center">
+                <Text
+                  className="text-xl font-bold text-slate-100"
+                  numberOfLines={1}
+                >
+                  {card}
+                </Text>
+              </View>
+              <View className="flex-row flex-1">
+                <View className="rounded-lg bg-sky-900 ml-1 mb-0.5 flex-1 justify-center items-center">
+                  <Text className="text-lg font-bold text-slate-100">
+                    {condition}
                   </Text>
                 </View>
-              </TouchableWithoutFeedback>
-              {isExpanded && (
-                <View className="bg-slate-700 rounded-b-lg fixed">
-                  <FlatList
-                    data={createArrayUpToQuantity(quantity)}
-                    renderItem={({ item }) => {
-                      return (
-                        <TouchableWithoutFeedback
-                          onPress={() => handleValueSelect(item)}
-                        >
-                          <View className="bg-sky-900 w-28 items-center">
-                            <Text className="text-slate-100 text-lg font-bold text-center">
-                              {item}
-                            </Text>
-                          </View>
-                        </TouchableWithoutFeedback>
-                      );
-                    }}
-                    keyExtractor={(item) => item}
-                    showsVerticalScrollIndicator={false}
-                  />
+                <View className="rounded-lg bg-sky-900 ml-1 mb-0.5 flex-1 justify-center items-center">
+                  <Text className="text-xl font-bold text-slate-100">
+                    ${price}
+                  </Text>
                 </View>
-              )}
-            </View>
-            <View className="px-2 text-center flex-1 justify-end">
-              <TouchableHighlight
-                className="bg-orange-500 flex-1 items-center justify-center rounded-lg"
-                underlayColor="white"
-              >
-                <Text className="text-2xl font-bold text-slate-100">BUY</Text>
-              </TouchableHighlight>
+              </View>
+              <View className="flex-row ml-1 h-10">
+                <View className="justify-center flex-col items-center flex-1 relative">
+                  <TouchableWithoutFeedback onPress={handlePress}>
+                    <View className="flex-row justify-between border-sky-900 border-2 rounded-lg flex-1 items-center">
+                      <Text className="text-xl font-bold text-sky-900 text-center flex-1">
+                        {selectedValue}
+                      </Text>
+                      <FontAwesome
+                        name="sort-down"
+                        size={24}
+                        color="rgb(12 74 110)"
+                        style={styles.icon}
+                      />
+                      <Text className="text-xl font-bold text-slate-100 text-center flex-1 bg-sky-900 rounded-lg py-1">
+                        {quantity}
+                      </Text>
+                    </View>
+                  </TouchableWithoutFeedback>
+                  {isExpanded && (
+                    <View className="rounded-b-lg absolute w-full -bottom-24">
+                      <FlatList
+                        data={createArrayUpToQuantity(quantity)}
+                        renderItem={({ item }) => {
+                          return (
+                            <Pressable onPress={() => handleValueSelect(item)}>
+                              <View className="bg-sky-900 items-center">
+                                <Text className="text-slate-100 text-xl font-bold text-center">
+                                  {item}
+                                </Text>
+                              </View>
+                            </Pressable>
+                          );
+                        }}
+                        keyExtractor={(item) => item}
+                        showsVerticalScrollIndicator={false}
+                      />
+                    </View>
+                  )}
+                </View>
+                <View className="flex-1 ml-1">
+                  <MyButton />
+                </View>
+              </View>
             </View>
           </View>
+          {isVisible && (
+            <View className="flex-row mt-1">
+              <View className="w-24 items-center mt-1">
+                <Image
+                  source={{ uri: profile }}
+                  className="w-20 h-20 rounded-full mb-4"
+                />
+                <WhatsAppButton />
+              </View>
+              <View className="flex-1 pl-1">
+                <View className="rounded-lg bg-sky-900 mb-0.5 flex-1 justify-center items-center">
+                  <Text
+                    className="text-xl font-bold text-slate-100"
+                    numberOfLines={1}
+                  >
+                    {name}
+                  </Text>
+                </View>
+                <View className="rounded-lg bg-sky-900 p-1.5 flex-1 h-36">
+                  <Text className="text-xs text-slate-100">{description}</Text>
+                </View>
+              </View>
+            </View>
+          )}
         </View>
-      </View>
+      </TouchableWithoutFeedback>
     </View>
   );
 };

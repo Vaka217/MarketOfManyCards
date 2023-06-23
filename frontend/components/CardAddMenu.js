@@ -1,12 +1,27 @@
-import { View, FlatList, Image, Pressable, TextInput, Modal, StyleSheet, Text } from "react-native";
+import {
+  View,
+  FlatList,
+  Image,
+  Pressable,
+  TextInput,
+  Modal,
+  StyleSheet,
+  Text,
+} from "react-native";
 import SearchBar from "./SearchBar.js";
 import { useState, useEffect } from "react";
 import { SingleCardManager } from "./SingleCardManager.js";
-import useDebounce from "../hooks/useDebounce";
-import Loading from "./Loading";
-import { getCardsSearchResults } from "../api/MtgAPI";
+import useDebounce from "../hooks/useDebounce.js";
+import Loading from "./Loading.js";
+import { getCardsSearchResults } from "../api/MtgAPI.js";
 
-export function CardAddMenu({ showModal, setShowModal, handleContentSizeChange, currentCard, setCurrentCard }) {
+export function CardAddMenu({
+  showModal,
+  setShowModal,
+  handleContentSizeChange,
+  currentCard,
+  setCurrentCard,
+}) {
   const [clicked, setClicked] = useState(false);
   const [term, setTerm] = useState("");
   const debouncedSearchValue = useDebounce(term, 1000);
@@ -50,7 +65,7 @@ export function CardAddMenu({ showModal, setShowModal, handleContentSizeChange, 
         addCard={addCard}
       />
     );
-  }
+  };
 
   const addCard = (item) => {
     console.log(item);
@@ -62,7 +77,12 @@ export function CardAddMenu({ showModal, setShowModal, handleContentSizeChange, 
   };
 
   return (
-    <Modal visible={showModal} animationType="slide" transparent={true} style={styles.centeredView}>
+    <Modal
+      visible={showModal}
+      animationType="slide"
+      transparent={true}
+      style={styles.centeredView}
+    >
       <View style={styles.modalView} className="bg-slate-800">
         <SearchBar
           clicked={clicked}
@@ -76,18 +96,25 @@ export function CardAddMenu({ showModal, setShowModal, handleContentSizeChange, 
           contentContainerStyle={styles.container7}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
-          />
-          <View style={{ borderRadius: 25, padding: 15, marginTop: 5, width: 150, alignItems: "center" }} className="bg-sky-700">
-            <Pressable onPress={closing} style={{  }}>
-              <Text className="text-slate-100">
-                Close
-              </Text>
-            </Pressable>
-          </View>
+        />
+        <View
+          style={{
+            borderRadius: 25,
+            padding: 15,
+            marginTop: 5,
+            width: 150,
+            alignItems: "center",
+          }}
+          className="bg-sky-700"
+        >
+          <Pressable onPress={closing} style={{}}>
+            <Text className="text-slate-100">Close</Text>
+          </Pressable>
         </View>
+      </View>
     </Modal>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container7: {
@@ -96,18 +123,18 @@ const styles = StyleSheet.create({
   },
   centeredView: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 22,
-    backgroundColor: 'blue',
+    backgroundColor: "blue",
   },
   modalView: {
     margin: 20,
     marginTop: "25%",
     borderRadius: 20,
     padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,

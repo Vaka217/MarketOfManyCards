@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -8,7 +8,7 @@ import {
   TouchableHighlight,
   Modal,
   Pressable,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 
@@ -56,7 +56,7 @@ const MyComponent = ({ item }) => {
             <View className="flex-1 ml-1 w-3/4">
               <View className="rounded-lg mb-0.5 bg-sky-900 ml-1 flex-1 items-center justify-center">
                 <Text
-                  className="text-xs font-bold text-slate-100"
+                  className="text-xl font-bold text-slate-100"
                   numberOfLines={1}
                 >
                   {item.name}
@@ -64,7 +64,7 @@ const MyComponent = ({ item }) => {
               </View>
               <View className="rounded-lg bg-sky-900 ml-1 mb-0.5 flex-1 items-center justify-center">
                 <Text
-                  className="text-xs font-bold text-slate-100"
+                  className="text-base font-bold text-slate-100"
                   numberOfLines={1}
                 >
                   {item.card}
@@ -73,7 +73,7 @@ const MyComponent = ({ item }) => {
             </View>
             <View className="rounded-lg bg-sky-900 ml-1 mb-0.5 items-center justify-center px-4">
               <Text
-                className="text-xs font-bold text-slate-100"
+                className="text-xl font-bold text-slate-100"
                 numberOfLines={1}
               >
                 ${item.price}
@@ -85,7 +85,7 @@ const MyComponent = ({ item }) => {
           <View className="flex-row mt-1.5">
             <Image
               source={{ uri: item.pic }}
-              style={{ marginTop: 8, flex: 1 }}
+              style={{ marginTop: 8, width: 24 }}
             />
             <View className="flex-1 ml-2">
               <View className="rounded-lg bg-sky-900 mb-0.5 p-1.5 flex-1 h-36">
@@ -116,13 +116,13 @@ const MyComponent = ({ item }) => {
   );
 };
 
-const Auction = ({ filter }) => {
+const Auction = () => {
   const [data, setData] = useState([
     {
       id: "1",
       pic: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
       name: "Pedro",
-      condition: "Near-Mint",
+      condition: "Near-Mind",
       quantity: 3,
       price: "20",
       card: "Llanowar Elves",
@@ -131,7 +131,7 @@ const Auction = ({ filter }) => {
       id: "2",
       pic: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
       name: "Juana",
-      condition: "Near-Mint",
+      condition: "Near-Mind",
       quantity: 4,
       price: "200",
       card: "Lightning Bolt",
@@ -140,7 +140,7 @@ const Auction = ({ filter }) => {
       id: "3",
       pic: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
       name: "Luis",
-      condition: "Near-Mint",
+      condition: "Near-Mind",
       quantity: 50,
       price: "7",
       card: "Eidolon of Countless Battles",
@@ -148,15 +148,9 @@ const Auction = ({ filter }) => {
     // Add more items as needed
   ]);
 
-  const [filteredData, setFilteredData] = useState(data.filter(post => post.card === filter));
-
-  useEffect(() => {
-    filter === undefined ? setFilteredData(data) : setFilteredData(data.filter(post => post.card === filter));
-  }, [data]);
-
   return (
     <FlatList
-      data={filteredData}
+      data={data}
       keyExtractor={(item) => item.id.toString()}
       renderItem={({ item }) => <MyComponent item={item} />}
     />

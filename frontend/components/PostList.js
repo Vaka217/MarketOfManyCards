@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
+
 import {
   FlatList,
   View,
@@ -8,113 +9,121 @@ import {
 } from "react-native";
 import Sale from "./Sale";
 import Auction from "./Auction";
+import axios from "axios";
 
-const posts = [
+ const posts = async () => {
+   try {
+     const response = await axios.get('http://18.229.90.36:3000/searchsales');
+     const salesData = response.data;
+
+     return salesData
+   } catch (error) {
+     console.log(error);
+   }
+ }
+
+/*const posteados = [
   {
     id: "1",
-    pic: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
+    pic: "https://cards.scryfall.io/large/front/b/d/bd8fa327-dd41-4737-8f19-2cf5eb1f7cdd.jpg?1614638838",
     name: "Pedro",
-    condition: "Near-Mint",
+    condition: "Near-Mind",
     quantity: 3,
     price: "20",
     card: "Llanowar Elves",
+    profile:
+      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut.",
   },
   {
     id: "2",
-    pic: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
+    pic: "https://cards.scryfall.io/large/front/b/d/bd8fa327-dd41-4737-8f19-2cf5eb1f7cdd.jpg?1614638838",
     name: "Juana",
-    condition: "Near-Mint",
+    condition: "Near-Mind",
+    profile:
+      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
     quantity: 4,
     price: "200",
     card: "Lightning Bolt",
   },
   {
     id: "3",
-    pic: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
+    pic: "https://cards.scryfall.io/large/front/b/d/bd8fa327-dd41-4737-8f19-2cf5eb1f7cdd.jpg?1614638838",
     name: "Luis",
-    condition: "Near-Mint",
+    condition: "Near-Mind",
+    profile:
+      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
     quantity: 50,
     price: "7",
     card: "Eidolon of Countless Battles",
   },
   {
     id: "4",
-    pic: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
+    pic: "https://cards.scryfall.io/large/front/b/d/bd8fa327-dd41-4737-8f19-2cf5eb1f7cdd.jpg?1614638838",
     name: "Pedro",
-    condition: "Near-Mint",
+    condition: "Near-Mind",
+    profile:
+      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
     quantity: 3,
     price: "20",
     card: "Llanowar Elves",
   },
   {
     id: "5",
-    pic: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
+    pic: "https://cards.scryfall.io/large/front/b/d/bd8fa327-dd41-4737-8f19-2cf5eb1f7cdd.jpg?1614638838",
     name: "Juana",
-    condition: "Near-Mint",
+    condition: "Near-Mind",
     quantity: 4,
     price: "200",
     card: "Lightning Bolt",
+    profile:
+      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
   },
   {
     id: "6",
-    pic: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
+    pic: "https://cards.scryfall.io/large/front/b/d/bd8fa327-dd41-4737-8f19-2cf5eb1f7cdd.jpg?1614638838",
     name: "Luis",
-    condition: "Near-Mint",
+    condition: "Near-Mind",
     quantity: 50,
     price: "7",
     card: "Eidolon of Countless Battles",
+    profile:
+      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut.",
   },
-  {
-    id: "7",
-    pic: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-    name: "Pedro",
-    condition: "Near-Mint",
-    quantity: 3,
-    price: "20",
-    card: "Llanowar Elves",
-  },
-  {
-    id: "8",
-    pic: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-    name: "Juana",
-    condition: "Near-Mint",
-    quantity: 4,
-    price: "200",
-    card: "Lightning Bolt",
-  },
-  {
-    id: "9",
-    pic: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-    name: "Luis",
-    condition: "Near-Mint",
-    quantity: 50,
-    price: "7",
-    card: "Eidolon of Countless Battles",
-  },
-];
+];*/
 
-const PostList = ({ filter }) => {
+const PostList = () => {
   const [isAuctionsPressed, setIsAuctionsPressed] = useState(false);
+  const [posteados, setPosteados] = useState([]);
 
-  let filteredPosts = posts;
+  useEffect(() => {
+      const fetchData = async () => {
+      const data = await posts();
 
-  if (filter) {
-    filteredPosts = posts.filter(post => post.card === filter);
-  }
+      setPosteados(data);
+    };
+
+    fetchData();
+  }, []);
+
+  console.log(posteados);
   return (
     <>
-      <View className="flex-row mx-3">
+      <View className="flex-row">
         <TouchableWithoutFeedback
           onPress={() => {
             setIsAuctionsPressed(false);
           }}
         >
           <View
-            className={`h-10 flex-1 items-center justify-center rounded-tl-lg ${
+            className={`h-10 flex-1 items-center justify-center ${
               isAuctionsPressed ? "bg-sky-900" : "bg-sky-700"
             }`}
           >
-            <Text className="text-slate-100 text-base font-bold">Sales</Text>
+            <Text className="text-slate-100 text-lg font-bold">Sales</Text>
           </View>
         </TouchableWithoutFeedback>
         <TouchableWithoutFeedback
@@ -123,25 +132,25 @@ const PostList = ({ filter }) => {
           }}
         >
           <View
-            className={`h-10 flex-1 items-center justify-center rounded-tr-lg ${
+            className={`h-10 flex-1 items-center justify-center ${
               isAuctionsPressed ? "bg-sky-700" : "bg-sky-900"
             }`}
           >
-            <Text className="text-slate-100 text-base font-bold">Auctions</Text>
+            <Text className="text-slate-100 text-lg font-bold">Auctions</Text>
           </View>
         </TouchableWithoutFeedback>
       </View>
       <FlatList
-        data={filteredPosts}
+        data={posteados}
         renderItem={({ item }) => {
           if (isAuctionsPressed) {
-            return <Auction {...item} filter={filter} />;
+            return <Auction {...item} />;
           } else {
             return <Sale {...item} />;
           }
         }}
         keyExtractor={(item) => item.id}
-        className="mx-3 bg-sky-700"
+        className="bg-sky-700"
         showsVerticalScrollIndicator={false}
       />
     </>
