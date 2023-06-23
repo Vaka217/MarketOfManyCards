@@ -21,9 +21,9 @@ services:
     ports:
       - 3000:3000
     environment:
-      - DB_HOST=${MYSQL_HOST}
-      - DB_PORT=${MYSQL_PORT}
-      - DB_USER=${MYSQL_USER}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
       - DB_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - DB_NAME=${MYSQL_DATABASE}
     links:
