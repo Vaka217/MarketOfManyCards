@@ -6,9 +6,7 @@ on:
       - main
       - backend
   pull_request:
-    branches:
-      - main
-      - backend
+    branches: [main]
     types:
       - closed
 #-------------------------------------------------------#
@@ -37,8 +35,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        with:
-          path: backend
 
       - name: Set up environment variables
         run: |
