@@ -6,7 +6,9 @@ on:
       - main
       - backend
   pull_request:
-    branches: [main]
+    branches:
+      - main
+      - backend
     types:
       - closed
 #-------------------------------------------------------#
