@@ -48,4 +48,5 @@ jobs:
 
       - name: Build the Docker image
         run: |
+          cd backend
           sudo docker-compose up -d --build --force-recreate
