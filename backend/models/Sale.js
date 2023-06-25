@@ -35,7 +35,7 @@ const Sale = sequelize.define("Sale", {
     type: DataTypes.INTEGER,
     references: {
       model: Card,
-      key: "id",
+      key: "card_id",
     },
   },
   status: {

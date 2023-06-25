@@ -166,26 +166,30 @@ router.post("/createsales", async (req, res) => {
       return res.status(404).json({ error: "Usuario no encontrado" });
     }
 
-    // Parsea la cadena JSON para convertirla en un objeto JavaScript
-    const cardInfo = JSON.parse(cardData);
-
     // Extrae los valores necesarios del objeto
-    const { id, name, type, image, manaCost, text, set, loyalty } = cardInfo;
+    const { id, name, type, image, manaCost, text, set, loyalty, cmc, flavor_text, number, power, toughness, multiverse_id } = JSON.parse(cardData);
 
     // Busca la instancia de la carta en la base de datos
-    const cardInstance = await Card.findOne({ where: { id: id } });
+    let cardInstance = await Card.findOne({ where: { cardstring_id: id } });
 
     if (!cardInstance) {
       // Si la carta no existe, crea una nueva instancia
       const createdCard = await Card.create({
-        id: id,
+        cardstring_id: id,
         name: name,
-        type: type,
-        mana_cost: manaCost,
-        text: text,
         set: set,
-        card_image: image,
+        mana_cost: manaCost,
+        cmc: cmc,
+        type: type,
+        text: text,
+        flavor_text: flavor_text,
+        number: number,
+        power: power,
+        toughness: toughness,
         loyalty: loyalty,
+        multiverse_id: multiverse_id,
+        card_image: image,
+        
       });
 
       // Asigna la nueva instancia de la carta al objeto cardInstance
@@ -220,8 +224,8 @@ router.post("/createsales", async (req, res) => {
         image: cardInstance.card_image,
       },
     };
-
-    console.log(cardInfo);
+    console.log(cardInstance.card_id)
+    //console.log(carddata)
     return res.json(response);
 
   } catch (error) {

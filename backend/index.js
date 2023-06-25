@@ -9,7 +9,6 @@ const Bid = require("./models/Bid");
 const Sale = require("./models/Sale");
 const Comment = require("./models/Comment");
 const Card = require("./models/Card");
-const Set = require("./models/Set");
 const Sequelize = require("sequelize");
 
 // Importar las rutas de usuarios
@@ -42,8 +41,6 @@ Comment.belongsTo(Sale, { foreignKey: "sales_id" });
 Auction.hasMany(Comment, { foreignKey: "auction_id" });
 Comment.belongsTo(Auction, { foreignKey: "auction_id" });
 
-Card.belongsTo(Set, { foreignKey: "set_id" });
-Set.hasMany(Card, { foreignKey: "set_id" });
 
 // Sincronizar modelos y luego iniciar la aplicación
 sequelize

@@ -49,7 +49,7 @@ const Auction = sequelize.define('Auction', {
     type: DataTypes.INTEGER,
     references: {
       model: Card,
-      key: 'id',
+      key: 'card_id',
     },
   },
   status: {

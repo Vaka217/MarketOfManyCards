@@ -1,21 +1,20 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../database/connection');
-const Set = require('./Set');
 
 const Card = sequelize.define('Card', {
-  id: {
+  card_id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
+    autoIncrement: true,
+  },
+  cardstring_id: {
+    type: DataTypes.STRING,
   },
   name: {
     type: DataTypes.STRING,
   },
-  set_id: {
-    type: DataTypes.INTEGER,
-    references: {
-      model: Set,
-      key: 'id',
-    },
+  set: {
+    type: DataTypes.STRING,
   },
   mana_cost: {
     type: DataTypes.STRING,
@@ -27,7 +26,7 @@ const Card = sequelize.define('Card', {
     type: DataTypes.STRING,
   },
   text: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(500),
   },
   flavor_text: {
     type: DataTypes.STRING,
@@ -52,7 +51,5 @@ const Card = sequelize.define('Card', {
   },
 });
 
-Set.hasMany(Card, { foreignKey: 'set_id' });
-Card.belongsTo(Set, { foreignKey: 'set_id' });
 
 module.exports = Card;
