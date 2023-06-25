@@ -50,6 +50,7 @@ const Auction = sequelize.define('Auction', {
     references: {
       model: Card,
       key: 'card_id',
+      onDelete: 'CASCADE'
     },
   },
   status: {

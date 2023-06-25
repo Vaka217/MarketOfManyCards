@@ -209,7 +209,7 @@ router.post("/createsales", async (req, res) => {
       quantity: quantity,
       status: "pending",
       seller_id: userId,
-      card_id: cardInstance.id,
+      card_id: cardInstance.card_id,
       condition: condition,
     });
 
@@ -224,7 +224,7 @@ router.post("/createsales", async (req, res) => {
         image: cardInstance.card_image,
       },
     };
-    console.log(cardInstance.card_id)
+    //console.log(cardInstance.card_id)
     //console.log(carddata)
     return res.json(response);
 
