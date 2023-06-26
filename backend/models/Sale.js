@@ -32,7 +32,7 @@ const Sale = sequelize.define("Sale", {
     },
   },
   card_id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.STRING,
     references: {
       model: Card,
       key: "card_id",

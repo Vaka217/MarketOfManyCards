@@ -180,15 +180,8 @@ router.post("/createsales", async (req, res) => {
         name: name,
         set: set,
         mana_cost: manaCost,
-        cmc: cmc,
         type: type,
         text: text,
-        flavor_text: flavor_text,
-        number: number,
-        power: power,
-        toughness: toughness,
-        loyalty: loyalty,
-        multiverse_id: multiverse_id,
         card_image: image,
       });
 
@@ -410,6 +403,9 @@ module.exports = router;
 
 // Modo subasta
 // Ruta para crear una subasta para un usuario
-router.post("/createauction/:id/", auctionController.createAuction);
+router.post("/createauction", auctionController.createAuction);
+router.post("/makebid", auctionController.makeBid);
+router.get("/searchwinners", auctionController.auctionWinners);
+
 
 module.exports = router;
