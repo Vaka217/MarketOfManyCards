@@ -151,7 +151,8 @@ router.delete("/deleteuser/:id", async (req, res) => {
 //   }
 // });
 router.post("/createsales", async (req, res) => {
-  const { price, description, quantity, cardData, condition, userId } = req.body;
+  const { price, description, quantity, cardData, condition, userId } =
+    req.body;
 
   // Validación de datos
   if (!price || !description || !quantity || !cardData || !condition) {
@@ -167,15 +168,15 @@ router.post("/createsales", async (req, res) => {
     }
 
     // Extrae los valores necesarios del objeto
-    const { id, name, type, image, manaCost, text, set, loyalty, cmc, flavor_text, number, power, toughness, multiverse_id } = JSON.parse(cardData);
+    const { id, name, type, image, manaCost, text, set } = JSON.parse(cardData);
 
     // Busca la instancia de la carta en la base de datos
-    let cardInstance = await Card.findOne({ where: { cardstring_id: id } });
+    let cardInstance = await Card.findOne({ where: { card_id: id } });
 
     if (!cardInstance) {
       // Si la carta no existe, crea una nueva instancia
       const createdCard = await Card.create({
-        cardstring_id: id,
+        card_id: id,
         name: name,
         set: set,
         mana_cost: manaCost,
@@ -189,7 +190,6 @@ router.post("/createsales", async (req, res) => {
         loyalty: loyalty,
         multiverse_id: multiverse_id,
         card_image: image,
-        
       });
 
       // Asigna la nueva instancia de la carta al objeto cardInstance
@@ -227,7 +227,6 @@ router.post("/createsales", async (req, res) => {
     //console.log(cardInstance.card_id)
     //console.log(carddata)
     return res.json(response);
-
   } catch (error) {
     console.error(error);
     return res
@@ -305,7 +304,10 @@ router.get("/searchsales/:id", async (req, res) => {
 
     const sales = await Sale.findAll({
       where: { seller_id: id },
-      include: [{ model: User, attributes: ["nickname", "profilePic"] }, { model: Card, attributes: ["name", "card_image"] }],
+      include: [
+        { model: User, attributes: ["nickname", "profilePic"] },
+        { model: Card, attributes: ["name", "card_image"] },
+      ],
       limit: 10,
       order: [["createdAt", "DESC"]],
     });

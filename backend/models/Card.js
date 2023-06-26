@@ -5,10 +5,6 @@ const Card = sequelize.define('Card', {
   card_id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
-    autoIncrement: true,
-  },
-  cardstring_id: {
-    type: DataTypes.STRING,
   },
   name: {
     type: DataTypes.STRING,
