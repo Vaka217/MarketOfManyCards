@@ -1,4 +1,5 @@
 const express = require("express");
+const fs = require('fs');
 const router = express.Router();
 const User = require("../models/User");
 const Sale = require("../models/Sale");
@@ -83,15 +84,16 @@ router.post("/createuser/", async (req, res) => {
 });
 
 // Ruta para actualizar un usuario por su ID
-router.put("/updateuser/:id", async (req, res) => {
-  const { id } = req.params;
-  const { nickname, email, contact } = req.body;
+router.put("/updateuser", async (req, res) => {
+  const { nickname, email, contact, id , imageData} = req.body;
   try {
     const user = await User.findByPk(id);
     if (user) {
+      user.id = id;
       user.nickname = nickname;
       user.email = email;
       user.contact = contact;
+      user.profilePic = imageData;
       await user.save();
       res.json(user);
     } else {

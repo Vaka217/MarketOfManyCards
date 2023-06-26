@@ -27,6 +27,7 @@ const Sale = sequelize.define("Sale", {
   seller_id: {
     type: DataTypes.INTEGER,
     references: {
+      onDelete: 'CASCADE',
       model: User,
       key: "id",
     },

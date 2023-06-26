@@ -8,6 +8,7 @@ const Bid = sequelize.define('Bid', {
     type: DataTypes.INTEGER,
     primaryKey: true,
     references: {
+      onDelete: 'CASCADE',
       model: Auction,
       key: 'id',
     },
@@ -16,6 +17,7 @@ const Bid = sequelize.define('Bid', {
     type: DataTypes.INTEGER,
     primaryKey: true,
     references: {
+      onDelete: 'CASCADE',
       model: User,
       key: 'id',
     },

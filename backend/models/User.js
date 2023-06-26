@@ -9,7 +9,7 @@ const User = sequelize.define("User", {
     autoIncrement: true,
   },
   profilePic: {
-    type: DataTypes.STRING, // DataTypes.TEXT si es una URL
+    type: DataTypes.STRING,
   },
   nickname: {
     type: DataTypes.STRING,
