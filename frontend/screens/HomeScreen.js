@@ -4,6 +4,28 @@ import SearchBar from "../components/SearchBar";
 import PostList from "../components/PostList";
 import CardList from "../components/CardList";
 import useDebounce from "../hooks/useDebounce";
+import axios from "axios";
+import marketAPI from "../api/MarketAPI";
+
+const posts = async () => {
+  try {
+    const response = await axios.get("http://18.229.90.36:3000/searchsales");
+    const salesData = response.data;
+    return salesData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const cards = async () => {
+  try {
+    const response = await axios.get("http://18.229.90.36:3000/searchcards");
+    const cardsData = response.data;
+    return cardsData;
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 const HomeScreen = () => {
   const [term, setTerm] = useState("");
@@ -26,9 +48,9 @@ const HomeScreen = () => {
         />
       </View>
       {term === "" ? (
-        <PostList />
+        <PostList content={posts} />
       ) : (
-        <CardList searchTerm={debouncedSearchValue} />
+        <CardList searchTerm={debouncedSearchValue} content={cards} />
       )}
     </SafeAreaView>
   );

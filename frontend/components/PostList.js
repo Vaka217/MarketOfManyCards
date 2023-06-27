@@ -1,5 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
-
+import React, { useEffect, useState } from "react";
 import {
   FlatList,
   View,
@@ -9,99 +8,40 @@ import {
 } from "react-native";
 import Sale from "./Sale";
 import Auction from "./Auction";
-import axios from "axios";
 
- const posts = async () => {
-   try {
-     const response = await axios.get('http://18.229.90.36:3000/searchsales');
-     const salesData = response.data;
+// const posteados2 = [
+//   {
+//     "sale": {
+//         "id": 3,
+//         "price": "12.99",
+//         "description": "Venta de Lightning Bolt",
+//         "quantity": 5,
+//         "status": "pending",
+//         "seller_id": 1,
+//         "card_id": 3,
+//         "condition": "Mint",
+//         "updatedAt": "2023-06-26T14:31:55.962Z",
+//         "createdAt": "2023-06-26T14:31:55.962Z"
+//     },
+//     "user": {
+//         "nickname": "Pedro",
+//         "profilePic": null
+//     },
+//     "card": {
+//         "name": "Lightning Bolt",
+//         "image": "https://cards.scryfall.io/png/front/f/2/f29ba16f-c8fb-42fe-aabf-87089cb214a7.png?1673147852"
+//     }
+// }
+// ];
 
-     return salesData
-   } catch (error) {
-     console.log(error);
-   }
- }
-
-/*const posteados = [
-  {
-    id: "1",
-    pic: "https://cards.scryfall.io/large/front/b/d/bd8fa327-dd41-4737-8f19-2cf5eb1f7cdd.jpg?1614638838",
-    name: "Pedro",
-    condition: "Near-Mind",
-    quantity: 3,
-    price: "20",
-    card: "Llanowar Elves",
-    profile:
-      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut.",
-  },
-  {
-    id: "2",
-    pic: "https://cards.scryfall.io/large/front/b/d/bd8fa327-dd41-4737-8f19-2cf5eb1f7cdd.jpg?1614638838",
-    name: "Juana",
-    condition: "Near-Mind",
-    profile:
-      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-    quantity: 4,
-    price: "200",
-    card: "Lightning Bolt",
-  },
-  {
-    id: "3",
-    pic: "https://cards.scryfall.io/large/front/b/d/bd8fa327-dd41-4737-8f19-2cf5eb1f7cdd.jpg?1614638838",
-    name: "Luis",
-    condition: "Near-Mind",
-    profile:
-      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-    quantity: 50,
-    price: "7",
-    card: "Eidolon of Countless Battles",
-  },
-  {
-    id: "4",
-    pic: "https://cards.scryfall.io/large/front/b/d/bd8fa327-dd41-4737-8f19-2cf5eb1f7cdd.jpg?1614638838",
-    name: "Pedro",
-    condition: "Near-Mind",
-    profile:
-      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-    quantity: 3,
-    price: "20",
-    card: "Llanowar Elves",
-  },
-  {
-    id: "5",
-    pic: "https://cards.scryfall.io/large/front/b/d/bd8fa327-dd41-4737-8f19-2cf5eb1f7cdd.jpg?1614638838",
-    name: "Juana",
-    condition: "Near-Mind",
-    quantity: 4,
-    price: "200",
-    card: "Lightning Bolt",
-    profile:
-      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-  },
-  {
-    id: "6",
-    pic: "https://cards.scryfall.io/large/front/b/d/bd8fa327-dd41-4737-8f19-2cf5eb1f7cdd.jpg?1614638838",
-    name: "Luis",
-    condition: "Near-Mind",
-    quantity: 50,
-    price: "7",
-    card: "Eidolon of Countless Battles",
-    profile:
-      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut.",
-  },
-];*/
-
-const PostList = () => {
+const PostList = ({ content }) => {
   const [isAuctionsPressed, setIsAuctionsPressed] = useState(false);
   const [posteados, setPosteados] = useState([]);
 
   useEffect(() => {
-      const fetchData = async () => {
-      const data = await posts();
+    const fetchData = async () => {
+      const data = await content();
+      console.log(data);
 
       setPosteados(data);
     };
@@ -109,7 +49,6 @@ const PostList = () => {
     fetchData();
   }, []);
 
-  console.log(posteados);
   return (
     <>
       <View className="flex-row">
@@ -149,7 +88,7 @@ const PostList = () => {
             return <Sale {...item} />;
           }
         }}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.sale.id}
         className="bg-sky-700"
         showsVerticalScrollIndicator={false}
       />

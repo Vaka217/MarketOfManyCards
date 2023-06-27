@@ -94,11 +94,13 @@ const signin =
     }
   };
 
-const signout = (dispatch) => async ({ navigation }) => {
-  await AsyncStorage.removeItem("token");
-  dispatch({ type: "signout" });
-  navigation.navigate("Log");
-};
+const signout =
+  (dispatch) =>
+  async ({ navigation }) => {
+    await AsyncStorage.removeItem("token");
+    dispatch({ type: "signout" });
+    navigation.navigate("Log");
+  };
 
 export const { Provider, Context } = createDataContext(
   authReducer,

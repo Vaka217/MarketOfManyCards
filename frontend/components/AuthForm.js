@@ -3,13 +3,39 @@ import { StyleSheet } from "react-native";
 import { View } from "react-native";
 import { Input, Text, Button } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
+import useDebounce from "../hooks/useDebounce";
+import { useEffect } from "react";
 
 const AuthForm = ({ headerText, submitButtonText, onSubmit, errorMessage }) => {
   const [nickname, setNickname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [contact, setContact] = useState("");
+  const [passwordStrength, setPasswordStrength] = useState("");
+  const [nicknameStrength, setNicknameStrength] = useState("");
+  const debouncedPassword = useDebounce(password, 500);
+  const debouncedNickname = useDebounce(nickname, 500);
   const navigation = useNavigation();
+
+  const checkStrength = (value) => {
+    const regex = /^.{8,}$/;
+
+    if (regex.test(value)) {
+      return "Strong";
+    } else {
+      return "Weak";
+    }
+  };
+
+  useEffect(() => {
+    const strength = checkStrength(debouncedPassword);
+    setPasswordStrength(strength);
+  }, [debouncedPassword]);
+
+  useEffect(() => {
+    const strength = checkStrength(debouncedNickname);
+    setNicknameStrength(strength);
+  }, [debouncedNickname]);
 
   return (
     <>
@@ -29,6 +55,9 @@ const AuthForm = ({ headerText, submitButtonText, onSubmit, errorMessage }) => {
             labelStyle={styles.label}
             inputStyle={styles.label}
           />
+          {nicknameStrength == "Weak" && nickname != "" && (
+            <Text className="text-base text-red-600">Minimum 8 characters</Text>
+          )}
         </>
       )}
       <Input
@@ -52,6 +81,9 @@ const AuthForm = ({ headerText, submitButtonText, onSubmit, errorMessage }) => {
       />
       {headerText == "Sign up for MMC" && (
         <>
+          {passwordStrength == "Weak" && password != "" && (
+            <Text className="text-base text-red-600">Minimum 8 characters</Text>
+          )}
           <Input
             label="Phone"
             value={contact}
@@ -63,6 +95,7 @@ const AuthForm = ({ headerText, submitButtonText, onSubmit, errorMessage }) => {
           />
         </>
       )}
+
       {errorMessage ? (
         <Text className="text-base text-red-600">{errorMessage}</Text>
       ) : null}

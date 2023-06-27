@@ -1,12 +1,12 @@
 import React from "react";
-import { TouchableOpacity, Linking, Image, View } from "react-native";
+import { TouchableOpacity, Linking, Image } from "react-native";
 
 const WhatsAppButton = () => {
   const handleWhatsAppPress = () => {
-    const phoneNumber = "59895881582"; // Esto debería tener el contacto del seller
+    const phoneNumber = "59894734131"; // Esto debería tener el contacto del seller
     const message = "Que onda pa ando probando el botón que envía mensajes"; // Y esto otro mensaje mejor escrito xd
 
-    const url = `whatsapp://send?phone=${phoneNumber}&text=${encodeURIComponent(
+    const url = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(
       message
     )}`;
 
