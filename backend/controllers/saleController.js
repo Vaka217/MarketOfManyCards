@@ -1,3 +1,9 @@
+const Sale = require('../models/Sale');
+const User = require('../models/User');
+const Card = require('../models/Card');
+const { validationResult } = require('express-validator');
+const { response } = require('express');
+
 const createSale = async (req, res) => {
 const { price, description, quantity, cardData, condition, userId } =
     req.body;
