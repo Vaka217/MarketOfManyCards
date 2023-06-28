@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 export function SingleCardManager({item, handleContentSizeChange, addCard}) {
     return (
         <View style={styles.container6} key={item.name} className="bg-sky-700">
+          <Pressable style={styles.container4} onPress={() => addCard(item)}>
             <View style={styles.container4}>
                 <View style={{ flex: 1, backgroundColor: 'red' }}>
                   <Image source={{ uri: item.image }} style={styles.image2}/>
@@ -16,13 +17,7 @@ export function SingleCardManager({item, handleContentSizeChange, addCard}) {
                   </View>
                 </View>
             </View>
-            <View style={{ flex: 1, backgroundColor: "white", justifyContent: "center", alignItems: "center" }}>
-                  <Pressable onPress={() =>{addCard(item)}}>
-                    <Text>
-                      Select this card to post
-                    </Text>
-                  </Pressable>
-                </View>
+          </Pressable>
         </View>
     );
 }

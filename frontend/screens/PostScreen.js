@@ -12,6 +12,8 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   SafeAreaView,
+  ScrollView,
+  Alert
 } from "react-native";
 import { CardAddMenu } from "../components/CardAddMenu.js";
 import { PostButton } from "../components/PostButton.js";
@@ -20,6 +22,9 @@ import { useState, useEffect, useContext } from "react";
 import { SearchBar } from "../components/SearchBar.js";
 import { PrivateValueStore } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
+import { Input } from "react-native-elements";
+import { FontAwesome } from "@expo/vector-icons";
+import DropDownPicker from 'react-native-dropdown-picker';
 
 export default function PostScreen() {
   const [showModal, setShowModal] = useState(false);
@@ -27,7 +32,18 @@ export default function PostScreen() {
   const [description, setDescription] = useState("");
   const [isSale, setIsSale] = useState(true);
   const [cardQuality, setCardQuality] = useState("");
-  const [cardQuantity, setCardQuantity] = useState("");
+  const [cardQuantity, setCardQuantity] = useState();
+  const [placeholder, setPlaceholder] = useState(styles.imagePlaceholder);
+  const [open, setOpen] = useState(false);
+  const [items, setItems] = useState([
+    {label: 'Mint', value: 'mint'},
+    {label: 'Near Mint', value: 'near mint'},
+    {label: 'Excellent', value: 'excellent'},
+    {label: 'Good', value: 'good'},
+    {label: 'Light Played', value: 'light played'},
+    {label: 'Played', value: 'played'},
+    {label: 'Poor', value: 'poor'},
+  ]);
 
   const [currentCard, setCurrentCard] = useState("");
 
@@ -48,6 +64,10 @@ export default function PostScreen() {
     setCardQuantity("");
   };
 
+  useEffect(() => {
+    currentCard === "" ? setPlaceholder(styles.imagePlaceholder) : setPlaceholder(styles.imageTrue);
+  }, [currentCard])
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View
@@ -56,17 +76,18 @@ export default function PostScreen() {
           flexDirection: "row",
           justifyContent: "center",
           alignItems: "center",
-          backgroundColor: "rgb(186, 230, 253)",
+          backgroundColor: "#0269a3",
         }}
       >
         <View style={styles.container}>
+          <View style={placeholder}>
           <Pressable
             onPress={() => {
               setShowModal(true);
             }}
           >
             {currentCard === "" ? (
-              <Text>Select card to post...</Text>
+              <Text style={{ color: '#5D5D5D' }}>Select card to post...</Text>
             ) : (
               <Image
                 source={{ uri: JSON.parse(currentCard)["image"] }}
@@ -74,14 +95,16 @@ export default function PostScreen() {
               />
             )}
           </Pressable>
+          </View>
         </View>
         <View
           style={{
             flex: 1,
             justifyContent: "center",
             alignItems: "center",
-            backgroundColor: "rgb(186, 230, 253)",
-            height: "84%",
+            backgroundColor: "#0269a3",
+            width: "50%",
+            aspectRatio: 0.65
           }}
         >
           <View
@@ -93,20 +116,20 @@ export default function PostScreen() {
               marginRight: "5%",
               justifyContent: "center",
               backgroundColor: "rgb(51, 65, 85)",
-              width: "100%",
+              aspectRatio: 1.5,
             }}
           >
-            <TextInput
-              placeholder="Quality..."
-              value={cardQuality}
-              onChangeText={setCardQuality}
-              multiline={false}
-              keyboardType={"default"}
-              onContentSizeChange={handleContentSizeChange}
-              maxLength={30}
-              style={{ color: "rgb(241, 245, 249)" }}
-              placeholderTextColor={"#5D5D5D"}
-            ></TextInput>
+          <Input
+                label="Price"
+                value={price}
+                onChangeText={setPrice}
+                autoCapitalize="none"
+                autoCorrect={false}
+                labelStyle={styles.label}
+                inputStyle={styles.label}
+                keyboardType={"decimal-pad"}
+                containerStyle={{ alignItems: "center", justifyContent: "center", marginTop: '10%' }}
+              />
           </View>
           <View
             style={{
@@ -117,20 +140,20 @@ export default function PostScreen() {
               alignItems: "center",
               justifyContent: "center",
               backgroundColor: "rgb(51, 65, 85)",
-              width: "100%",
+              aspectRatio: 1.5,
             }}
           >
-            <TextInput
-              placeholder="Quantity..."
-              value={cardQuantity}
-              onChangeText={setCardQuantity}
-              multiline={false}
-              keyboardType={"numeric"}
-              onContentSizeChange={handleContentSizeChange}
-              maxLength={30}
-              style={{ color: "rgb(241, 245, 249)" }}
-              placeholderTextColor={"#5D5D5D"}
-            ></TextInput>
+            <Input
+            label="Quantity"
+            value={cardQuantity}
+            onChangeText={setCardQuantity}
+            autoCapitalize="none"
+            autoCorrect={false}
+            labelStyle={styles.label}
+            inputStyle={styles.label}
+            keyboardType={"decimal-pad"}
+            containerStyle={{ alignItems: "center", justifyContent: "center", marginTop: '10%' }}
+            />
           </View>
           <View
             style={{
@@ -141,20 +164,20 @@ export default function PostScreen() {
               alignItems: "center",
               justifyContent: "center",
               backgroundColor: "rgb(51, 65, 85)",
-              width: "100%",
+              aspectRatio: 1.5,
             }}
           >
-            <TextInput
-              placeholder="Price..."
-              value={price}
-              onChangeText={setPrice}
-              multiline={false}
-              keyboardType={"numeric"}
-              onContentSizeChange={handleContentSizeChange}
-              maxLength={7}
-              style={{ color: "rgb(241, 245, 249)" }}
-              placeholderTextColor={"#5D5D5D"}
-            ></TextInput>
+            <Input
+            label="Quality"
+            value={cardQuality}
+            onChangeText={setCardQuality}
+            autoCapitalize="none"
+            autoCorrect={false}
+            labelStyle={styles.label}
+            inputStyle={styles.label}
+            keyboardType={"default"}
+            containerStyle={{ alignItems: "center", justifyContent: "center", marginTop: '10%' }}
+            />
           </View>
         </View>
         <CardAddMenu
@@ -165,12 +188,12 @@ export default function PostScreen() {
           setCurrentCard={setCurrentCard}
         />
       </View>
-      <View style={{ flex: 1, backgroundColor: "rgb(186, 230, 253)" }}>
+      <View style={{ flex: 1, backgroundColor: "#0269a3" }}>
         <View
           style={{
             flex: 2,
             flexDirection: "row",
-            backgroundColor: "rgb(186, 230, 253)",
+            backgroundColor: "#0269a3",
           }}
         >
           <View
@@ -197,13 +220,15 @@ export default function PostScreen() {
             ></TextInput>
           </View>
         </View>
-        <View style={{ flex: 1, backgroundColor: "rgb(186, 230, 253)" }}>
-          <SaleAuctionSlider isSale={isSale} setIsSale={setIsSale} />
+        <View style={{ flex: 1, backgroundColor: "#0269a3" }}>
+          <View style={{ flex: 1 }}>
+            <SaleAuctionSlider isSale={isSale} setIsSale={setIsSale} />
+          </View>
         </View>
         <View
           style={{
             flex: 1,
-            backgroundColor: "rgb(186, 230, 253)",
+            backgroundColor: "#0269a3",
             justifyContent: "center",
             alignItems: "center",
           }}
@@ -226,13 +251,13 @@ export default function PostScreen() {
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
-    justifyContent: "space-evenly",
+    justifyContent: "center",
     marginLeft: "2%",
     marginRight: "2%",
-    height: "84%",
+    width: "50%",
     borderRadius: 20,
     backgroundColor: "rgb(51, 65, 85)",
-    width: "60%",
+    aspectRatio: 2.5/3.5,
   },
   container2: {
     flexDirection: "row",
@@ -259,4 +284,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  imagePlaceholder: {
+    borderColor: '#5D5D5D',
+    borderStyle: "dashed",
+    width: '90%',
+    height: '90%',
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 20,
+    borderWidth: 1
+  },
+  imageTrue: {
+    width: '100%',
+    height: '100%',
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  label: {
+    color: "rgb(241, 245, 249)",
+  }
 });

@@ -24,7 +24,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.vakon.testcardmarket2"
+      "package": "com.vakon.testcardmarket2",
+      "softwareKeyboardLayoutMode": "pan"
     },
     "extra": {
       "eas": {

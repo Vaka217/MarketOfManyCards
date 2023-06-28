@@ -6,12 +6,14 @@ import HomeScreen from "../screens/HomeScreen";
 import PostScreen from "../screens/PostScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import CardScreen from "../screens/CardScreen";
+import { KeyboardAvoidingView } from "react-native";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 export function MyTabs() {
   return (
+    <KeyboardAvoidingView style={{ flex: 1 }}>
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size }) => {
@@ -32,6 +34,7 @@ export function MyTabs() {
         tabBarShowLabel: false,
         tabBarActiveTintColor: "rgb(249 115 22)",
         tabBarInactiveTintColor: "rgb(186 230 253)",
+        tabBarHideOnKeyboard: true,
         tabBarStyle: {
           backgroundColor: "rgb(12 74 110)",
         },
@@ -50,5 +53,6 @@ export function MyTabs() {
       <Tab.Screen name="Post" component={PostScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
+    </KeyboardAvoidingView>
   );
 }

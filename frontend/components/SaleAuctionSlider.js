@@ -11,8 +11,8 @@ export function SaleAuctionSlider( {isSale, setIsSale} ) {
     }, [isSale]);
 
     return (
-        <View style={{ flex: 1 }}>
-            <Pressable style={styles.sliderBackground} onPress={() => {setIsSale(!isSale)}} className="flex-1 items-center justify-center bg-slate-700">
+        <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+            <Pressable style={styles.sliderBackground} onPress={() => {setIsSale(!isSale)}} className="flex-1 items-center justify-center">
                 <View style={styleType}>
                     <Text className="text-slate-100">
                         {postType}
@@ -26,10 +26,9 @@ export function SaleAuctionSlider( {isSale, setIsSale} ) {
 const styles = StyleSheet.create({
     sliderBackground: {
         borderRadius: 180,
-        marginLeft: 25,
-        marginRight: 25,
-        marginTop: 2,
-        marginBottom: 2,
+        width: '95%',
+        backgroundColor: "rgb(51, 65, 85)",
+        aspectRatio: 6/1
     },
     sliderButtonAuction: {
         flex: 1,
