@@ -87,7 +87,7 @@ export default function PostScreen() {
             }}
           >
             {currentCard === "" ? (
-              <Text style={{ color: '#5D5D5D' }}>Select card to post...</Text>
+              <Text style={{ color: "rgb(241, 245, 249)" }}>Select card to post...</Text>
             ) : (
               <Image
                 source={{ uri: JSON.parse(currentCard)["image"] }}
@@ -104,7 +104,8 @@ export default function PostScreen() {
             alignItems: "center",
             backgroundColor: "#0269a3",
             width: "50%",
-            aspectRatio: 0.65
+            aspectRatio: 0.55,
+            justifyContent: "space-evenly"
           }}
         >
           <View
@@ -115,7 +116,7 @@ export default function PostScreen() {
               margin: "1%",
               marginRight: "5%",
               justifyContent: "center",
-              backgroundColor: "rgb(51, 65, 85)",
+              backgroundColor: "rgb(12, 74, 110)",
               aspectRatio: 1.5,
             }}
           >
@@ -139,7 +140,7 @@ export default function PostScreen() {
               marginRight: "5%",
               alignItems: "center",
               justifyContent: "center",
-              backgroundColor: "rgb(51, 65, 85)",
+              backgroundColor: "rgb(12, 74, 110)",
               aspectRatio: 1.5,
             }}
           >
@@ -163,7 +164,7 @@ export default function PostScreen() {
               marginRight: "5%",
               alignItems: "center",
               justifyContent: "center",
-              backgroundColor: "rgb(51, 65, 85)",
+              backgroundColor: "rgb(12, 74, 110)",
               aspectRatio: 1.5,
             }}
           >
@@ -203,7 +204,7 @@ export default function PostScreen() {
               margin: 10,
               alignItems: "center",
               justifyContent: "center",
-              backgroundColor: "rgb(51, 65, 85)",
+              backgroundColor: "rgb(12, 74, 110)",
             }}
           >
             <TextInput
@@ -222,7 +223,7 @@ export default function PostScreen() {
         </View>
         <View style={{ flex: 1, backgroundColor: "#0269a3" }}>
           <View style={{ flex: 1 }}>
-            <SaleAuctionSlider isSale={isSale} setIsSale={setIsSale} />
+            <SaleAuctionSlider isSale={isSale} setIsSale={setIsSale}/>
           </View>
         </View>
         <View
@@ -256,7 +257,7 @@ const styles = StyleSheet.create({
     marginRight: "2%",
     width: "50%",
     borderRadius: 20,
-    backgroundColor: "rgb(51, 65, 85)",
+    backgroundColor: "rgb(12, 74, 110)",
     aspectRatio: 2.5/3.5,
   },
   container2: {
@@ -285,14 +286,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   imagePlaceholder: {
-    borderColor: '#5D5D5D',
+    borderColor: 'rgb(241, 245, 249)',
     borderStyle: "dashed",
     width: '90%',
     height: '90%',
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 20,
-    borderWidth: 1
+    borderWidth: 0
   },
   imageTrue: {
     width: '100%',
