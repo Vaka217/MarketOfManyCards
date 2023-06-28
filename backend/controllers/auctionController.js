@@ -5,53 +5,6 @@ const { validationResult } = require('express-validator');
 const Bid = require('../models/Bid');
 const { response } = require('express');
 
-// const updateAuctionStatus = async (auctionId) => {
-//   try {
-//     const auction = await Auction.findByPk(auctionId);
-//     if (!auction) {
-//       console.log('Subasta no encontrada');
-//       return;
-//     }
-
-//     // Verificar si la subasta ya ha finalizado
-//     if (auction.status !== 'pending') {
-//       console.log('La subasta ya ha finalizado');
-//       return;
-//     }
-
-//     // Obtener la fecha actual y la fecha de finalización de la subasta
-//     const currentDate = new Date();
-//     const endDate = new Date(auction.created_at.getTime() + auction.duration * 1000);
-
-//     // Verificar si la fecha actual supera la fecha de finalización de la subasta
-//     if (currentDate > endDate) {
-//       // Actualizar el estado de la subasta a "finalizado"
-//       auction.status = 'finalizado';
-//       await auction.save();
-
-//       console.log('La subasta ha finalizado');
-//       // Aca podemos incluir cualquier otra lógica adicional como notificar al ganador
-//     }
-//   } catch (error) {
-//     console.error('Error al actualizar el estado de la subasta:', error);
-//   }
-// };
-
-// // Llamar a la función para actualizar el estado de las subastas periódicamente
-// setInterval(() => {
-//   // Obtener todas las subastas pendientes
-//   Auction.findAll({ where: { status: 'pending' } })
-//     .then((auctions) => {
-//       // Actualizar el estado de cada subasta
-//       auctions.forEach((auction) => {
-//         updateAuctionStatus(auction.id);
-//       });
-//     })
-//     .catch((error) => {
-//       console.error('Error al obtener las subastas pendientes:', error);
-//     });
-// }, 60000); // Actualiza cada minuto 
-
 const createAuction = async (req, res) => {
   const { actual_bid, description, quantity, cardData, condition, userId } = req.body;
 
@@ -74,9 +27,6 @@ const createAuction = async (req, res) => {
 
     startTime.setUTCMinutes(startTime.getUTCMinutes() - 180);
     endTime.setUTCMinutes(endTime.getUTCMinutes() - 180);
-    
-    console.log(startTime);
-    console.log(endTime);
 
     if (startTime >= endTime) {
       return res.status(400).json({ error: 'La fecha de inicio debe ser anterior a la fecha de finalización' });
@@ -151,8 +101,7 @@ const createAuction = async (req, res) => {
         image: cardInstance.card_image,
       },
     };
-    //console.log(cardInstance.card_id)
-    //console.log(carddata)
+
     return res.json(response);
 
   } catch (error) {
@@ -163,7 +112,6 @@ const createAuction = async (req, res) => {
   }
 };
 
-// Crear una bid
 const makeBid = async (req, res) => {
   const { auctionId, userId, bidAmount } = req.body;
 
@@ -208,7 +156,7 @@ const makeBid = async (req, res) => {
   }
 };
 
-const auctionWinners = async (req, res) => {
+const searchAuctionWinners = async (req, res) => {
 const {auction_id} = req.body;
 
 // Verificar si la subasta existe
@@ -231,12 +179,286 @@ const response = {
 };
     return res.status(200).json(response);
 
-}
+};
 
+const searchAuctions = async (req, res) => {
+  try {
+    const auction = await Auction.findAll({
+      limit: 10,
+      order: [["createdAt", "DESC"]],
+    });
+
+    const response = await Promise.all(
+      auction.map(async (auction) => {
+        const { seller_id, card_id } = auction;
+
+        // busca dentro de user
+        const userProfile = await User.findOne({
+          where: { id: seller_id },
+          attributes: ["nickname", "profilePic"],
+        });
+
+        // busca dentro de cards
+        const card = await Card.findByPk(card_id, {
+          attributes: ["name", "card_image"],
+        });
+
+        return {
+          auction,
+          user: {
+            nickname: userProfile.nickname,
+            profilePic: userProfile.profilePic,
+          },
+          card: {
+            name: card.name,
+            image: card.card_image,
+          },
+        };
+      })
+    );
+
+    res.json(response);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al obtener las ventas" });
+  }
+};
+
+const searchAuctionById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findByPk(id);
+    if (!user) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    const auction = await Auction.findAll({
+      where: { seller_id: id },
+      include: [
+        { model: User, attributes: ["nickname", "profilePic"] },
+        { model: Card, attributes: ["name", "card_image"] },
+      ],
+      limit: 10,
+      order: [["createdAt", "DESC"]],
+    });
+
+    const response = auction.map((auction) => {
+      const { User: userProfile, Card: card } = auction;
+
+      return {
+        auction,
+        user: {
+          nickname: userProfile.nickname,
+          profilePic: userProfile.profilePic,
+        },
+        card: {
+          name: card.name,
+          image: card.card_image,
+        },
+      };
+    });
+
+    res.json(response);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al obtener las ventas del usuario" });
+  }
+};
+
+const searchAuctionBycard = async (req, res) => {
+  const { cardId } = req.params;
+  try {
+    const card = await Card.findByPk(cardId);
+    if (!card) {
+      return res.status(404).json({ error: "Carta no encontrada" });
+    }
+
+    const auction = await Auction.findAll({
+      where: { card_id: cardId },
+      include: [{ model: User, attributes: ["nickname", "profilePic"] }],
+      limit: 10,
+      order: [["createdAt", "DESC"]],
+    });
+
+    const response = auction.map((auction) => {
+      const { User: userProfile } = auction;
+
+      return {
+        auction,
+        user: {
+          nickname: userProfile.nickname,
+          profilePic: userProfile.profilePic,
+        },
+        card: {
+          name: card.name,
+          image: card.card_image,
+        },
+      };
+    });
+
+    res.json(response);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al obtener las ventas de la carta" });
+  }
+};
+
+// este es una prueba //
+const updateAuction = async (req, res) => {
+  const { auctionId, actual_bid, description, quantity, cardData, condition, userId } = req.body;
+
+  // Antes de la validación de datos existente
+if (!auctionId || !actual_bid || !description || quantity === undefined || !cardData || !condition) {
+  return res.status(400).json({ error: "Por favor, completa todos los campos obligatorios" });
+}
+  try {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    // Validación de fechas
+    const startTime = new Date();
+    const endTime = new Date(startTime.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+    startTime.setUTCMinutes(startTime.getUTCMinutes() - 180);
+    endTime.setUTCMinutes(endTime.getUTCMinutes() - 180);
+
+    if (startTime >= endTime) {
+      return res.status(400).json({ error: 'La fecha de inicio debe ser anterior a la fecha de finalización' });
+    }
+
+    // Extrae los valores necesarios del objeto
+    const { id, name, type, image, manaCost, text, set, loyalty, cmc, flavor_text, number, power, toughness, multiverse_id } = JSON.parse(cardData);
+
+    // Busca la instancia de la carta en la base de datos
+    let cardInstance = await Card.findOne({ where: { card_id: id } });
+
+    if (!cardInstance) {
+      // Si la carta no existe, crea una nueva instancia
+      const createdCard = await Card.create({
+        card_id: id,
+        name: name,
+        set: set,
+        mana_cost: manaCost,
+        cmc: cmc,
+        type: type,
+        text: text,
+        flavor_text: flavor_text,
+        number: number,
+        power: power,
+        toughness: toughness,
+        loyalty: loyalty,
+        multiverse_id: multiverse_id,
+        card_image: image,
+        
+      });
+
+      // Asigna la nueva instancia de la carta al objeto cardInstance
+      cardInstance = createdCard;
+    }
+
+    // Busca dentro del usuario
+    const userProfile = await User.findOne({
+      where: { id: userId },
+      attributes: ["nickname", "profilePic"],
+    });
+
+    // Actualiza la subasta en la base de datos
+    const auction = await Auction.findByPk(auctionId);
+    if (!auction) {
+      return res.status(404).json({ error: "Subasta no encontrada" });
+    }
+
+    auction.actual_bid = actual_bid;
+    auction.description = description;
+    auction.quantity = quantity;
+    auction.card_id = cardInstance.card_id;
+    auction.condition = condition;
+    auction.start_time = startTime;
+    auction.end_time = endTime;
+
+    if (quantity === 0) {
+      // Eliminar la subasta si la cantidad es 0
+      await auction.destroy();
+      return res.status(200).json({ error: "Subasta eliminada" });
+    } else {
+      // Guardar los cambios en la subasta
+      await auction.save();
+    }
+
+    // Crea o actualiza la oferta en la base de datos
+    let bid = await Bid.findOne({ where: { auction_id: auctionId, bidder_id: userId } });
+    if (!bid) {
+      bid = await Bid.create({
+        auction_id: auctionId,
+        bidder_id: userId,
+        amount: actual_bid,
+      });
+    } else {
+      bid.amount = actual_bid;
+      await bid.save();
+    }
+
+    const response = {
+      auction: auction,
+      user: {
+        nickname: userProfile.nickname,
+        profilePic: userProfile.profilePic,
+      },
+      card: {
+        name: cardInstance.name,
+        image: cardInstance.card_image,
+      },
+    };
+
+    return res.json(response);
+
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ error: "Ha ocurrido un error al actualizar la subasta" });
+  }
+};
+
+// Sirve para aumentar/disminuir la cantidad de la subasta asi como para eliminarla
+const updateAuctionQuantity = async (req, res) => {
+  const { auctionId, quantity } = req.body;
+
+  if (!auctionId || quantity === undefined) {
+    return res.status(400).json({ error: "Por favor, proporciona el ID de la subasta y la cantidad" });
+  }
+
+  try {
+    const auction = await Auction.findByPk(auctionId);
+
+    if (!auction) {
+      return res.status(404).json({ error: "Subasta no encontrada" });
+    }
+
+    if (quantity === 0) {
+      await auction.destroy();
+      return res.json({ message: "La subasta ha sido eliminada" });
+    }
+
+    auction.quantity = quantity;
+    await auction.save();
+
+    return res.json({ message: "La subasta ha sido actualizada" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Ha ocurrido un error al actualizar la subasta" });
+  }
+};
 
 module.exports = {
   createAuction,
   makeBid,
-  auctionWinners,
-  //updateAuctionStatus,
+  searchAuctionWinners,
+  searchAuctions,
+  searchAuctionById,
+  searchAuctionBycard,
+  updateAuction,
+  updateAuctionQuantity,
 };
