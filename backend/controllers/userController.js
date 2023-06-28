@@ -1,3 +1,5 @@
+const User = require('../models/User');
+
 // Ruta para obtener todos los usuarios
 const getUsers = async (req, res) => {
   try {
