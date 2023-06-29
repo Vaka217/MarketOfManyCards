@@ -16,7 +16,7 @@ export function PostButton({
   const { state } = useContext(AuthContext);
   const [postCheck, setPostCheck] = useState(false);
   const generatePost = () => {
-    let postObject = {
+    let saleObject = {
       price: price,
       description: description,
       quantity: parseInt(cardQuantity),
@@ -24,6 +24,17 @@ export function PostButton({
       cardData: post,
       userId: state.userId,
     };
+
+    let auctionObject = {
+      actual_bid: price,
+      description: description,
+      quantity: parseInt(cardQuantity),
+      condition: cardQuality,
+      cardData: post,
+      userId: state.userId,
+    };
+    let routeToPostTo = "";
+    postType === true ? routeToPostTo = "http://18.229.90.36:3000/createsales" : routeToPostTo = "http://18.229.90.36:3000/createauction"
     console.log("Post content: ");
     console.log(post);
     console.log("Card Quantity: ");
@@ -39,7 +50,7 @@ export function PostButton({
     console.log("Card quality: ");
     console.log(cardQuality);
     setPostCheck(!postCheck);
-    createPost(postObject);
+    postType === true ? createPost(saleObject, routeToPostTo) : createPost(auctionObject, routeToPostTo);
   };
   const createPost = async ({
     price,
@@ -48,10 +59,10 @@ export function PostButton({
     condition,
     cardData,
     userId,
-  }) => {
+  }, routeToPostTo) => {
     try {
       const response = await axios.post(
-        "http://18.229.90.36:3000/createsales",
+        routeToPostTo,
         {
           price,
           description,
