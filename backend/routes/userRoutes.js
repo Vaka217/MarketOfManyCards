@@ -6,7 +6,7 @@ const userController = require("../controllers/userController");
 router.get("/searchusers", userController.getUsers);
 
 // Ruta para obtener un usuario por su ID
-router.get("/searchuser", userController.getUserById);
+router.get("/searchusers/:id", userController.getUserById);
 
 // Ruta para crear un usuario
 router.post("/createuser", userController.createUser);
