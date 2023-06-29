@@ -15,7 +15,7 @@ const getUsers = async (req, res) => {
 
 // Ruta para obtener un usuario por su ID
 const getUserById = async (req, res) => {
-  const { id } = req.param;
+  const { id } = req.params;
   try {
     const user = await User.findByPk(id);
     if (user) {
