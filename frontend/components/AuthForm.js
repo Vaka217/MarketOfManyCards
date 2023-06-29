@@ -114,9 +114,7 @@ const AuthForm = ({ headerText, submitButtonText, onSubmit, errorMessage }) => {
             width: 200,
             justifyContent: "center",
           }}
-          onPress={() =>
-            onSubmit({ email, password, nickname, contact, navigation })
-          }
+          onPress={() => onSubmit({ email, password, navigation })}
         />
       </View>
     </>

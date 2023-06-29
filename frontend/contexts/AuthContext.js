@@ -81,6 +81,7 @@ const signin =
         type: "signin",
         payload: { token: response.data.token, userId: response.data.userId },
       });
+      console.log(response.data.userId);
       navigation.navigate("Home");
     } catch (err) {
       console.log("Axios Error:", err.message);
