@@ -179,7 +179,10 @@ const searchSaleByCard = async (req, res) => {
       return res.status(404).json({ error: "Carta no encontrada" });
     }
     const post = await Sale.findAll({
-      limit: 10,
+      where: {
+        card_id: id,
+      },
+      //limit: 10,
       order: [["createdAt", "DESC"]],
     });
     const response = await Promise.all(

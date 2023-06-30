@@ -184,7 +184,10 @@ const response = {
 const searchAuctions = async (req, res) => {
   try {
     const post = await Auction.findAll({
-      limit: 10,
+      where: {
+        card_id: id,
+      },
+      //limit: 10,
       order: [["createdAt", "DESC"]],
     });
 
