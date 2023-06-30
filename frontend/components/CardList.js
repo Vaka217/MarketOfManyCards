@@ -6,21 +6,9 @@ import Loading from "./Loading";
 import marketAPI from "../api/MarketAPI";
 
 const CardList = ({ searchTerm, content }) => {
-  const [cards, setCards] = useState();
   const [searchCards, setSearchCards] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await content();
-      console.log(data);
-
-      setCards(data);
-    };
-
-    fetchData();
-  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,7 +18,7 @@ const CardList = ({ searchTerm, content }) => {
           return;
         }
         setIsLoading(true);
-        const filteredCards = cards.filter((card) => {
+        const filteredCards = content.filter((card) => {
           const cardName = card.name.toLowerCase();
           const cardSearch = searchTerm.toLowerCase();
           return cardName.includes(cardSearch);
