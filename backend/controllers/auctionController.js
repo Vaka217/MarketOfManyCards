@@ -183,14 +183,14 @@ const response = {
 
 const searchAuctions = async (req, res) => {
   try {
-    const auction = await Auction.findAll({
+    const post = await Auction.findAll({
       limit: 10,
       order: [["createdAt", "DESC"]],
     });
 
     const response = await Promise.all(
-      auction.map(async (auction) => {
-        const { seller_id, card_id } = auction;
+      post.map(async (post) => {
+        const { seller_id, card_id } = post;
 
         // busca dentro de user
         const userProfile = await User.findOne({
@@ -204,7 +204,7 @@ const searchAuctions = async (req, res) => {
         });
 
         return {
-          auction,
+          post,
           user: {
             nickname: userProfile.nickname,
             profilePic: userProfile.profilePic,
@@ -232,14 +232,14 @@ const searchAuctionById = async (req, res) => {
       return res.status(404).json({ error: "Usuario no encontrado" });
     }
 
-    const auction = await Auction.findAll({
+    const post = await Auction.findAll({
       where: { seller_id: id },
       limit: 10,
       order: [["createdAt", "DESC"]],
     });
     const response = await Promise.all(
-      auction.map(async (auction) => {
-        const { seller_id, card_id } = auction;
+      post.map(async (post) => {
+        const { seller_id, card_id } = post;
 
         // busca dentro de user
         const userProfile = await User.findOne({
@@ -253,7 +253,7 @@ const searchAuctionById = async (req, res) => {
         });
 
         return {
-          auction,
+          post,
           user: {
             nickname: userProfile.nickname,
             profilePic: userProfile.profilePic,
@@ -279,13 +279,13 @@ const searchAuctionBycard = async (req, res) => {
     if (!card) {
       return res.status(404).json({ error: "Carta no encontrada" });
     }
-    const auction = await Auction.findAll({
+    const post = await Auction.findAll({
       limit: 10,
       order: [["createdAt", "DESC"]],
     });
     const response = await Promise.all(
-      auction.map(async (auction) => {
-        const { seller_id, card_id } = auction;
+      post.map(async (post) => {
+        const { seller_id, card_id } = post;
 
         // busca dentro de user
         const userProfile = await User.findOne({
@@ -299,7 +299,7 @@ const searchAuctionBycard = async (req, res) => {
         });
 
         return {
-          auction,
+          post,
           user: {
             nickname: userProfile.nickname,
             profilePic: userProfile.profilePic,
@@ -380,26 +380,26 @@ if (!auctionId || !actual_bid || !description || quantity === undefined || !card
     });
 
     // Actualiza la subasta en la base de datos
-    const auction = await Auction.findByPk(auctionId);
-    if (!auction) {
+    const post = await Auction.findByPk(auctionId);
+    if (!post) {
       return res.status(404).json({ error: "Subasta no encontrada" });
     }
 
-    auction.actual_bid = actual_bid;
-    auction.description = description;
-    auction.quantity = quantity;
-    auction.card_id = cardInstance.card_id;
-    auction.condition = condition;
-    auction.start_time = startTime;
-    auction.end_time = endTime;
+    post.actual_bid = actual_bid;
+    post.description = description;
+    post.quantity = quantity;
+    post.card_id = cardInstance.card_id;
+    post.condition = condition;
+    post.start_time = startTime;
+    post.end_time = endTime;
 
     if (quantity === 0) {
       // Eliminar la subasta si la cantidad es 0
-      await auction.destroy();
+      await post.destroy();
       return res.status(200).json({ error: "Subasta eliminada" });
     } else {
       // Guardar los cambios en la subasta
-      await auction.save();
+      await post.save();
     }
 
     // Crea o actualiza la oferta en la base de datos
@@ -416,7 +416,7 @@ if (!auctionId || !actual_bid || !description || quantity === undefined || !card
     }
 
     const response = {
-      auction: auction,
+      post,
       user: {
         nickname: userProfile.nickname,
         profilePic: userProfile.profilePic,
