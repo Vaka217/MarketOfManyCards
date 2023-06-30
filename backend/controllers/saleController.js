@@ -132,55 +132,24 @@ const searchSaleById = async (req, res) => {
 
     const sale = await Sale.findAll({
       where: { seller_id: id },
-      include: [
-        { model: User, attributes: ["nickname", "profilePic"] },
-        { model: Card, attributes: ["name", "card_image"] },
-      ],
       limit: 10,
       order: [["createdAt", "DESC"]],
     });
+    const response = await Promise.all(
+      sale.map(async (sale) => {
+        const { seller_id, card_id } = sale;
 
-    const response = sale.map((sale) => {
-      const { User: userProfile, Card: card } = sale;
+        // busca dentro de user
+        const userProfile = await User.findOne({
+          where: { id: seller_id },
+          attributes: ["nickname", "profilePic"],
+        });
 
-      return {
-        sale,
-        user: {
-          nickname: userProfile.nickname,
-          profilePic: userProfile.profilePic,
-        },
-        card: {
-          name: card.name,
-          image: card.card_image,
-        },
-      };
-    });
+        // busca dentro de cards
+        const card = await Card.findByPk(card_id, {
+          attributes: ["name", "card_image"],
+        });
 
-    res.json(response);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error al obtener las ventas del usuario" });
-  }
-};
-
-const searchSaleByCard = async (req, res) => {
-    const { cardId } = req.params;
-    try {
-      const card = await Card.findByPk(cardId);
-      if (!card) {
-        return res.status(404).json({ error: "Carta no encontrada" });
-      }
-  
-      const sales = await Sale.findAll({
-        where: { card_id: cardId },
-        include: [{ model: User, attributes: ["nickname", "profilePic"] }],
-        limit: 10,
-        order: [["createdAt", "DESC"]],
-      });
-  
-      const response = sales.map((sale) => {
-        const { User: userProfile } = sale;
-  
         return {
           sale,
           user: {
@@ -192,16 +161,62 @@ const searchSaleByCard = async (req, res) => {
             image: card.card_image,
           },
         };
+      })
+    );
+
+    res.json(response);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al obtener las ventas" });
+  }
+};
+
+const searchSaleByCard = async (req, res) => {
+    const { id } = req.params;
+    try {
+      const card = await Card.findByPk(id);
+      if (!card) {
+        return res.status(404).json({ error: "Carta no encontrada" });
+      }
+      const sale = await Sale.findAll({
+        limit: 10,
+        order: [["createdAt", "DESC"]],
       });
+      const response = await Promise.all(
+        sale.map(async (sale) => {
+          const { seller_id, card_id } = sale;
   
+          // busca dentro de user
+          const userProfile = await User.findOne({
+            where: { id: seller_id },
+            attributes: ["nickname", "profilePic"],
+          });
+  
+          // busca dentro de cards
+          const card = await Card.findByPk(card_id, {
+            attributes: ["name", "card_image"],
+          });
+  
+          return {
+            sale,
+            user: {
+              nickname: userProfile.nickname,
+              profilePic: userProfile.profilePic,
+            },
+            card: {
+              name: card.name,
+              image: card.card_image,
+            },
+          };
+        })
+      );
       res.json(response);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: "Error al obtener las ventas de la carta" });
+      res.status(500).json({ error: "Error al obtener las ventas" });
     }
-};
-
-// Sirve para aumentar/disminuir la cantidad de la venta asi como para eliminarla
+  };
+  // Sirve para aumentar/disminuir la cantidad de la venta asi como para eliminarla
 const updateSaleQuantity = async (req, res) => {
   const { saleId, quantity } = req.body;
 

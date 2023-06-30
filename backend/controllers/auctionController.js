@@ -234,72 +234,87 @@ const searchAuctionById = async (req, res) => {
 
     const auction = await Auction.findAll({
       where: { seller_id: id },
-      include: [
-        { model: User, attributes: ["nickname", "profilePic"] },
-        { model: Card, attributes: ["name", "card_image"] },
-      ],
       limit: 10,
       order: [["createdAt", "DESC"]],
     });
+    const response = await Promise.all(
+      auction.map(async (auction) => {
+        const { seller_id, card_id } = auction;
 
-    const response = auction.map((auction) => {
-      const { User: userProfile, Card: card } = auction;
+        // busca dentro de user
+        const userProfile = await User.findOne({
+          where: { id: seller_id },
+          attributes: ["nickname", "profilePic"],
+        });
 
-      return {
-        auction,
-        user: {
-          nickname: userProfile.nickname,
-          profilePic: userProfile.profilePic,
-        },
-        card: {
-          name: card.name,
-          image: card.card_image,
-        },
-      };
-    });
+        // busca dentro de cards
+        const card = await Card.findByPk(card_id, {
+          attributes: ["name", "card_image"],
+        });
+
+        return {
+          auction,
+          user: {
+            nickname: userProfile.nickname,
+            profilePic: userProfile.profilePic,
+          },
+          card: {
+            name: card.name,
+            image: card.card_image,
+          },
+        };
+      })
+    );
 
     res.json(response);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Error al obtener las ventas del usuario" });
+    res.status(500).json({ error: "Error al obtener las ventas" });
   }
 };
-
 const searchAuctionBycard = async (req, res) => {
-  const { cardId } = req.params;
+  const { id } = req.params;
   try {
-    const card = await Card.findByPk(cardId);
+    const card = await Card.findByPk(id);
     if (!card) {
       return res.status(404).json({ error: "Carta no encontrada" });
     }
-
     const auction = await Auction.findAll({
-      where: { card_id: cardId },
-      include: [{ model: User, attributes: ["nickname", "profilePic"] }],
       limit: 10,
       order: [["createdAt", "DESC"]],
     });
+    const response = await Promise.all(
+      auction.map(async (auction) => {
+        const { seller_id, card_id } = auction;
 
-    const response = auction.map((auction) => {
-      const { User: userProfile } = auction;
+        // busca dentro de user
+        const userProfile = await User.findOne({
+          where: { id: seller_id },
+          attributes: ["nickname", "profilePic"],
+        });
 
-      return {
-        auction,
-        user: {
-          nickname: userProfile.nickname,
-          profilePic: userProfile.profilePic,
-        },
-        card: {
-          name: card.name,
-          image: card.card_image,
-        },
-      };
-    });
+        // busca dentro de cards
+        const card = await Card.findByPk(card_id, {
+          attributes: ["name", "card_image"],
+        });
 
+        return {
+          auction,
+          user: {
+            nickname: userProfile.nickname,
+            profilePic: userProfile.profilePic,
+          },
+          card: {
+            name: card.name,
+            image: card.card_image,
+          },
+        };
+      })
+    );
     res.json(response);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Error al obtener las ventas de la carta" });
+    res.status(500).json({ error: "Error al obtener las ventas" });
   }
 };
 
