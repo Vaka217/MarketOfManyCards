@@ -50,7 +50,7 @@ const PostList = ({ sales, auctions }) => {
             return <Post {...item} type="Sales" />;
           }
         }}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.post.id}
         className="bg-sky-700"
         showsVerticalScrollIndicator={false}
       />

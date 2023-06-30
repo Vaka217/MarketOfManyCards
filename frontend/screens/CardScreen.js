@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {
   View,
   Text,
@@ -12,30 +12,47 @@ import { useRoute } from "@react-navigation/native";
 import PostList from "../components/PostList";
 import SymbologyData from "../manaDict";
 import { SvgUri } from "react-native-svg";
-import { useState } from "react";
 import { Modal } from "react-native";
 import axios from "axios";
 
 const CardScreen = () => {
   const route = useRoute();
   const { name, mana_cost, type, set, text, card_image, card_id } = route.params;
+  const [cardSales, setCardSales] = useState(null);
+  const [cardAuctions, setCardAuctions] = useState(null);
   const symbols = mana_cost.match(/\{[^}]*\}/g);
   const maxSymbols = 4;
   const hasMoreSymbols = symbols.length > maxSymbols;
   const [expanded, setExpanded] = useState(false);
 
-  console.log(card_id);
-  const cardPosts = async () => {
-    try {
-      const response = await axios.get(
-        `http://18.229.90.36:3000/searchsalesbycard/{card_id}` 
-      );
-      const salesData = response.data;
-      return salesData;
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  useEffect(() => {
+    const cardSales = async () => {
+      try {
+        const response = await axios.get(
+          `http://18.229.90.36:3000/searchsalebycard/${card_id}` 
+        );
+        console.log(response.data);
+        setCardSales(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    const cardAuctions = async () => {
+      try {
+        const response = await axios.get(
+          `http://18.229.90.36:3000/searchauctionbycard/${card_id}` 
+        );
+        console.log(response.data);
+        setCardAuctions(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    cardSales();
+    cardAuctions();
+  }, [])
 
   const expandImage = () => {
     setExpanded(!expanded);
@@ -127,7 +144,7 @@ const CardScreen = () => {
           </View>
         </View>
       </View>
-      <PostList content={cardPosts} />
+      <PostList sales={cardSales} auctions={cardAuctions} />
     </SafeAreaView>
   );
 };

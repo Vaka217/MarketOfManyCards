@@ -121,7 +121,7 @@ const ProfileScreen = () => {
         />
       </View>
       <View className="bg-sky-700 flex-1">
-        <View className="overflow-hidden flex-1" onLayout={handleLayout}>
+        <View className="overflow-hidden" onLayout={handleLayout}>
           <FlatList
             data={options}
             renderItem={({ item }) => {
@@ -132,7 +132,7 @@ const ProfileScreen = () => {
                   }}
                 >
                   <View
-                    style={{ width: viewWidth / 3 }}
+                    style={{ width: viewWidth / 3.2 }}
                     className={`h-10 flex-1 items-center justify-center ${
                       isPressed === item ? "bg-sky-700" : "bg-sky-900"
                     }
@@ -148,18 +148,13 @@ const ProfileScreen = () => {
             keyExtractor={(item) => item}
             horizontal={true}
             showsHorizontalScrollIndicator={false}
-          />
+          />     
           <FlatList
             data={isPressed === "Auctions" ? auctionsData : salesData}
-            renderItem={({ item }) => {
-              if (isPressed === "Auctions") {
-                return <Post {...item} type={isPressed} />;
-              } else {
-                return <Confirmation {...item} />;
-              }
-            }}
-            keyExtractor={(item) => item.id}
-            className="bg-sky-700"
+            renderItem={({ item }) => (
+              <Post {...item} type={isPressed} />
+  )}
+            keyExtractor={(item) => item.post.id}
             showsVerticalScrollIndicator={false}
           />
         </View>

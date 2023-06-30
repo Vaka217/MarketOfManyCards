@@ -52,7 +52,7 @@ const signup =
         contact,
       });
       await AsyncStorage.setItem("token", response.data.token);
-      await AsyncStorage.setItem("userId", response.data.userId);
+      await AsyncStorage.setItem("userId", String(response.data.userId));
       dispatch({
         type: "signin",
         payload: { token: response.data.token, userId: response.data.userId },

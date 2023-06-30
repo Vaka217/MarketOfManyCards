@@ -81,7 +81,7 @@ const CardList = ({ searchTerm, content }) => {
         <FlatList
           data={searchCards}
           renderItem={({ item }) => <CardSearch {...item} />}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.card_id}
           showsVerticalScrollIndicator={false}
         />
       </>

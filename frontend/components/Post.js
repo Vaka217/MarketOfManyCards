@@ -7,6 +7,7 @@ import {
   Pressable,
   StyleSheet,
   FlatList,
+  Modal,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import MyButton from "./myButton";
@@ -86,26 +87,28 @@ const Post = ({ user, card, post, type }) => {
                       </Text>
                     </View>
                   </TouchableWithoutFeedback>
-                  {isExpanded && (
-                    <View className="rounded-b-lg absolute w-full -bottom-24">
-                      <FlatList
-                        data={createArrayUpToQuantity(post.quantity)}
-                        renderItem={({ item }) => {
-                          return (
-                            <Pressable onPress={() => handleValueSelect(item)}>
-                              <View className="bg-sky-900 items-center">
-                                <Text className="text-slate-100 text-xl font-bold text-center">
-                                  {item}
-                                </Text>
-                              </View>
-                            </Pressable>
-                          );
-                        }}
-                        keyExtractor={(item) => item}
-                        showsVerticalScrollIndicator={false}
-                      />
-                    </View>
-                  )}
+                    <Modal transparent={true} visible={isExpanded} className="flex-1" >
+                      <View className="rounded-b-lg flex-1 justify-center" style={{backgroundColor: "rgba(0, 0, 0, 0.5)"}}>
+                        <View className="bg-sky-900 p-2 m-8 rounded-lg items-center flex-row max-h-96">
+                          <FlatList
+                            data={createArrayUpToQuantity(post.quantity)}
+                            renderItem={({ item }) => {
+                              return (
+                                <Pressable onPress={() => handleValueSelect(item)}>
+                                  <View className="border-b border-slate-100 h-12 items-center justify-center">
+                                    <Text className="text-slate-100 font-bold text-2xl">
+                                      {item}
+                                    </Text>
+                                  </View>
+                                </Pressable>
+                              );
+                            }}
+                            keyExtractor={(item) => item}
+                            showsVerticalScrollIndicator={false}
+                          />
+                        </View>
+                      </View>
+                    </Modal>
                 </View>
                 <View className="flex-1 ml-1">
                   <MyButton type={type} />

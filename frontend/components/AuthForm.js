@@ -38,7 +38,7 @@ const AuthForm = ({ headerText, submitButtonText, onSubmit, errorMessage }) => {
   }, [debouncedNickname]);
 
   const handlePress = () => {
-    onSubmit({ email, password, navigation });
+    onSubmit({ email, password, nickname, contact, navigation });
     setNickname("");
     setEmail("");
     setPassword("");
