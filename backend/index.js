@@ -16,7 +16,7 @@ const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
 const auctionRoutes = require("./routes/auctionRoutes");
 const saleRoutes = require("./routes/saleRoutes");
-const { saveCardsFromAPI } = require("./controllers/cardController");
+const cardRoutes = require("./routes/cardRoutes");
 
 const app = express();
 const port = 3000;
@@ -54,6 +54,7 @@ sequelize
     app.use(authRoutes);
     app.use(auctionRoutes);
     app.use(saleRoutes);
+    app.use(cardRoutes);
 
     // Iniciar el servidor
     app.listen(port, () => {
