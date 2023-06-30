@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   SafeAreaView,
   View,
@@ -12,82 +12,76 @@ import {
   FlatList,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import PostList from "../components/PostList";
-import Sale from "../components/Sale";
-import Auction from "../components/Auction";
+import Post from "../components/Post";
 import Confirmation from "../components/Confirmation";
 import FormModal from "../components/FormModal";
 import { Modal } from "react-native";
-import { Button } from "react-native-elements";
 import { Context as AuthContext } from "../contexts/AuthContext";
 import { useNavigation } from "@react-navigation/native";
+import { Avatar } from "react-native-elements";
+import axios from "axios";
 
-options = ["Sales", "Auctions", "Bids", "Transactions", "Confirmations"];
-
-// const posts = [
-//   {
-//     id: "1",
-//     pic: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-//     name: "Pedro",
-//     condition: "Near-Mind",
-//     quantity: 3,
-//     price: "20",
-//     card: "Llanowar Elves",
-//   },
-//   {
-//     id: "2",
-//     pic: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-//     name: "Juana",
-//     condition: "Near-Mind",
-//     quantity: 4,
-//     price: "200",
-//     card: "Lightning Bolt",
-//   },
-//   {
-//     id: "3",
-//     pic: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-//     name: "Luis",
-//     condition: "Near-Mind",
-//     quantity: 50,
-//     price: "7",
-//     card: "Eidolon of Countless Battles",
-//   },
-//   {
-//     id: "4",
-//     pic: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-//     name: "Pedro",
-//     condition: "Near-Mind",
-//     quantity: 3,
-//     price: "20",
-//     card: "Llanowar Elves",
-//   },
-//   {
-//     id: "5",
-//     pic: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-//     name: "Juana",
-//     condition: "Near-Mind",
-//     quantity: 4,
-//     price: "200",
-//     card: "Lightning Bolt",
-//   },
-// ];
-
-const posts = async () => {
-  try {
-    const response = await axios.get("http://18.229.90.36:3000/searchsales");
-    const salesData = response.data;
-    return salesData;
-  } catch (error) {
-    console.log(error);
-  }
-};
+options = ["Sales", "Auctions", "Bids", "Transactions"];
 
 const ProfileScreen = () => {
   const [isPressed, setIsPressed] = useState("Sales");
   const [viewWidth, setViewWidth] = useState(0);
   const [isModal, setIsModal] = useState(false);
-  const { state, signout, clearErrorMessage } = useContext(AuthContext);
+  const { state, signout } = useContext(AuthContext);
+  const [salesData, setSalesData] = useState();
+  const [profileData, setProfileData] = useState();
+  const [auctionsData, setAuctionsData] = useState();
   const navigation = useNavigation();
+
+  console.log(state);
+
+  useEffect(() => {
+    const fetchSalesData = async () => {
+      try {
+        const response = await axios.get(
+          `http://18.229.90.36:3000/searchsale/${state.userId}`
+        );
+        const salesData = response.data;
+        console.log(state);
+        setSalesData(salesData);
+      } catch (error) {
+        console.log(state.userId, "aaaaa");
+        console.log(error);
+      }
+    };
+
+    const fetchAuctionsData = async () => {
+      try {
+        const response = await axios.get(
+          `http://18.229.90.36:3000/searchauction/${state.userId}`
+        );
+        const auctionsData = response.data;
+        console.log(state);
+        setAuctionsData(auctionsData);
+      } catch (error) {
+        console.log(state.userId, "aaaaa");
+        console.log(error);
+      }
+    };
+
+    const fetchProfileData = async () => {
+      try {
+        const response = await axios.get(
+          `http://18.229.90.36:3000/searchusers/${state.userId}`
+        );
+        const profileData = response.data;
+        console.log("jfasknlsdfknñlasflñsacfasjop");
+        setProfileData(profileData);
+      } catch (error) {
+        console.log(state.userId, "aaaaa");
+        console.log(error);
+      }
+    };
+
+    fetchProfileData();
+    fetchSalesData();
+    fetchAuctionsData();
+  }, []);
 
   const handleLayout = (event) => {
     const { width } = event.nativeEvent.layout;
@@ -103,50 +97,27 @@ const ProfileScreen = () => {
       <Modal visible={isModal} transparent={true} onRequestClose={toggleModal}>
         <FormModal isModal={isModal} toggleModal={toggleModal} />
       </Modal>
-      <View className="h-1/3 items-center" style={styles.container}>
-        <Text className="text-slate-100 text-base font-bold mt-1">
-          XxJuanCarlos1972xX
+      <View className="items-center pb-4" style={styles.container}>
+        <Text className="text-slate-100 text-base font-bold my-3">
+          JuanCarlos
         </Text>
-        <Image
-          source={{
-            uri: "https://cdn.discordapp.com/attachments/732360655658680452/1118248308213821491/ghj.png",
-          }}
-          className="w-28 h-28 rounded-full self-center mt-1"
-        />
-        <Button
-          title="Edit"
-          loading={false}
-          loadingProps={{ size: "small", color: "white" }}
-          buttonStyle={{
-            backgroundColor: "rgb(249 115 22)",
-            borderRadius: 5,
-          }}
-          titleStyle={{ fontWeight: "bold", fontSize: 16 }}
-          containerStyle={{
-            height: 45,
-            width: 200,
-            justifyContent: "center",
-            marginTop: 4,
-          }}
-          onPress={toggleModal}
-        />
-        <Button
-          title="Logout"
-          loading={false}
-          loadingProps={{ size: "small", color: "white" }}
-          buttonStyle={{
-            backgroundColor: "rgb(249 115 22)",
-            borderRadius: 5,
-          }}
-          titleStyle={{ fontWeight: "bold", fontSize: 16 }}
-          containerStyle={{
-            height: 45,
-            width: 200,
-            justifyContent: "center",
-          }}
+        <Pressable
           onPress={() => {
             signout({ navigation });
           }}
+          className="absolute right-1 m-2"
+        >
+          <FontAwesome name="sign-out" size={36} color="white" />
+        </Pressable>
+        <Pressable onPress={toggleModal} className="absolute left-1 m-2">
+          <FontAwesome name="edit" size={36} color="white" />
+        </Pressable>
+        <Avatar
+          rounded
+          source={{
+            uri: "https://cdn.discordapp.com/attachments/732360655658680452/1118248308213821491/ghj.png",
+          }}
+          size="large"
         />
       </View>
       <View className="bg-sky-700 flex-1">
@@ -179,12 +150,10 @@ const ProfileScreen = () => {
             showsHorizontalScrollIndicator={false}
           />
           <FlatList
-            data={posts}
+            data={isPressed === "Auctions" ? auctionsData : salesData}
             renderItem={({ item }) => {
               if (isPressed === "Auctions") {
-                return <Auction {...item} />;
-              } else if (isPressed === "Sales") {
-                return <Sale {...item} />;
+                return <Post {...item} type={isPressed} />;
               } else {
                 return <Confirmation {...item} />;
               }

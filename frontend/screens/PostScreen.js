@@ -82,24 +82,24 @@ export default function PostScreen() {
         }}
       >
         <View style={styles.container}>
-          <View style={placeholder}>
-            <Pressable
-              onPress={() => {
-                setShowModal(true);
-              }}
-            >
-              {currentCard === "" ? (
-                <Text style={{ color: "rgb(241, 245, 249)" }}>
-                  Select card to post...
-                </Text>
-              ) : (
-                <Image
-                  source={{ uri: JSON.parse(currentCard)["image"] }}
-                  style={{ flex: 1, height: 1, width: 180 }}
-                />
-              )}
-            </Pressable>
-          </View>
+          <Pressable
+            onPress={() => {
+              setShowModal(true);
+            }}
+            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+          >
+            {currentCard === "" ? (
+              <Text style={{ color: "rgb(241, 245, 249)" }}>
+                Select card to post...
+              </Text>
+            ) : (
+              <Image
+                source={{ uri: JSON.parse(currentCard)["image"] }}
+                style={{ flex: 1, width: "100%" }}
+                resizeMode="contain"
+              />
+            )}
+          </Pressable>
         </View>
         <View
           style={{
@@ -131,7 +131,7 @@ export default function PostScreen() {
               autoCapitalize="none"
               autoCorrect={false}
               labelStyle={styles.label}
-              inputStyle={styles.label}
+              inputStyle={styles.input}
               keyboardType={"decimal-pad"}
               containerStyle={{
                 alignItems: "center",
@@ -159,7 +159,7 @@ export default function PostScreen() {
               autoCapitalize="none"
               autoCorrect={false}
               labelStyle={styles.label}
-              inputStyle={styles.label}
+              inputStyle={styles.input}
               keyboardType={"decimal-pad"}
               containerStyle={{
                 alignItems: "center",
@@ -187,11 +187,10 @@ export default function PostScreen() {
               autoCapitalize="none"
               autoCorrect={false}
               labelStyle={styles.label}
-              inputStyle={styles.label}
+              inputStyle={styles.input}
               keyboardType={"default"}
               containerStyle={{
                 alignItems: "center",
-                justifyContent: "center",
                 marginTop: "10%",
               }}
             />
@@ -225,7 +224,11 @@ export default function PostScreen() {
           >
             <TextInput
               placeholder="Description..."
-              style={{ margin: 5, color: "rgb(241, 245, 249)" }}
+              style={{
+                margin: 5,
+                color: "rgb(241, 245, 249)",
+                fontStyle: "italic",
+              }}
               value={description}
               onChangeText={setDescription}
               multiline={true}
@@ -233,7 +236,7 @@ export default function PostScreen() {
               maxLength={150}
               rows={5}
               inputMode={"url"}
-              placeholderTextColor={"#5D5D5D"}
+              placeholderTextColor={"rgb(241 245 249)"}
             ></TextInput>
           </View>
         </View>
@@ -267,14 +270,13 @@ export default function PostScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: "center",
-    justifyContent: "center",
     marginLeft: "2%",
     marginRight: "2%",
     width: "50%",
-    borderRadius: 20,
+    borderRadius: 12,
     backgroundColor: "rgb(12, 74, 110)",
     aspectRatio: 2.5 / 3.5,
+    overflow: "hidden",
   },
   container2: {
     flexDirection: "row",
@@ -319,5 +321,9 @@ const styles = StyleSheet.create({
   },
   label: {
     color: "rgb(241, 245, 249)",
+  },
+  input: {
+    color: "rgb(241, 245, 249)",
+    textAlign: "center",
   },
 });

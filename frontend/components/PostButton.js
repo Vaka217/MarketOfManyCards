@@ -34,7 +34,9 @@ export function PostButton({
       userId: state.userId,
     };
     let routeToPostTo = "";
-    postType === true ? routeToPostTo = "http://18.229.90.36:3000/createsales" : routeToPostTo = "http://18.229.90.36:3000/createauction"
+    postType === true
+      ? (routeToPostTo = "http://18.229.90.36:3000/createsales")
+      : (routeToPostTo = "http://18.229.90.36:3000/createauction");
     console.log("Post content: ");
     console.log(post);
     console.log("Card Quantity: ");
@@ -50,32 +52,29 @@ export function PostButton({
     console.log("Card quality: ");
     console.log(cardQuality);
     setPostCheck(!postCheck);
-    postType === true ? createPost(saleObject, routeToPostTo) : createPost(auctionObject, routeToPostTo);
+    postType === true
+      ? createPost(saleObject, routeToPostTo)
+      : createPost(auctionObject, routeToPostTo);
   };
-  const createPost = async ({
-    price,
-    description,
-    quantity,
-    condition,
-    cardData,
-    userId,
-  }, routeToPostTo) => {
+  const createPost = async (
+    { price, description, quantity, condition, cardData, userId, actual_bid },
+    routeToPostTo
+  ) => {
     try {
-      const response = await axios.post(
-        routeToPostTo,
-        {
-          price,
-          description,
-          quantity,
-          condition,
-          cardData,
-          userId,
-        }
-      );
+      const response = await axios.post(routeToPostTo, {
+        price,
+        description,
+        quantity,
+        condition,
+        cardData,
+        userId,
+        actual_bid,
+      });
       const newPost = response.data;
       console.log("Funciona lol: ", newPost);
       return newPost;
     } catch (error) {
+      console.log(postType);
       console.error("Error lol: ", error.response.data);
     }
   };

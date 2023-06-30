@@ -11,6 +11,8 @@ import { MyTabs } from "./components/BottomNav";
 
 import { Provider as AuthProvider } from "./contexts/AuthContext";
 
+import ResolveAuthScreen from "./screens/ResolveAuthScreen";
+
 const Switch = createSwitchNavigator();
 const Stack = createStackNavigator();
 
@@ -28,6 +30,7 @@ export default function App() {
     <AuthProvider>
       <NavigationContainer>
         <Switch.Navigator>
+          <Switch.Screen name="ResolveAuth" component={ResolveAuthScreen} />
           <Switch.Screen name="Log" component={StackNavigation} />
           <Switch.Screen name="Main" component={MyTabs} />
         </Switch.Navigator>

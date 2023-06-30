@@ -6,48 +6,10 @@ import {
   TouchableWithoutFeedback,
   TouchableHighlight,
 } from "react-native";
-import Sale from "./Sale";
-import Auction from "./Auction";
+import Post from "./Post";
 
-// const posteados2 = [
-//   {
-//     "sale": {
-//         "id": 3,
-//         "price": "12.99",
-//         "description": "Venta de Lightning Bolt",
-//         "quantity": 5,
-//         "status": "pending",
-//         "seller_id": 1,
-//         "card_id": 3,
-//         "condition": "Mint",
-//         "updatedAt": "2023-06-26T14:31:55.962Z",
-//         "createdAt": "2023-06-26T14:31:55.962Z"
-//     },
-//     "user": {
-//         "nickname": "Pedro",
-//         "profilePic": null
-//     },
-//     "card": {
-//         "name": "Lightning Bolt",
-//         "image": "https://cards.scryfall.io/png/front/f/2/f29ba16f-c8fb-42fe-aabf-87089cb214a7.png?1673147852"
-//     }
-// }
-// ];
-
-const PostList = ({ content }) => {
+const PostList = ({ sales, auctions }) => {
   const [isAuctionsPressed, setIsAuctionsPressed] = useState(false);
-  const [posteados, setPosteados] = useState([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await content();
-      console.log(data);
-
-      setPosteados(data);
-    };
-
-    fetchData();
-  }, []);
 
   return (
     <>
@@ -80,15 +42,15 @@ const PostList = ({ content }) => {
         </TouchableWithoutFeedback>
       </View>
       <FlatList
-        data={posteados}
+        data={isAuctionsPressed ? auctions : sales}
         renderItem={({ item }) => {
           if (isAuctionsPressed) {
-            return <Auction {...item} />;
+            return <Post {...item} type="Auctions" />;
           } else {
-            return <Sale {...item} />;
+            return <Post {...item} type="Sales" />;
           }
         }}
-        keyExtractor={(item) => item.sale.id}
+        keyExtractor={(item) => item.id}
         className="bg-sky-700"
         showsVerticalScrollIndicator={false}
       />

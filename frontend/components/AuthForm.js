@@ -37,6 +37,14 @@ const AuthForm = ({ headerText, submitButtonText, onSubmit, errorMessage }) => {
     setNicknameStrength(strength);
   }, [debouncedNickname]);
 
+  const handlePress = () => {
+    onSubmit({ email, password, navigation });
+    setNickname("");
+    setEmail("");
+    setPassword("");
+    setContact("");
+  };
+
   return (
     <>
       <View className="m-4">
@@ -114,7 +122,7 @@ const AuthForm = ({ headerText, submitButtonText, onSubmit, errorMessage }) => {
             width: 200,
             justifyContent: "center",
           }}
-          onPress={() => onSubmit({ email, password, navigation })}
+          onPress={handlePress}
         />
       </View>
     </>

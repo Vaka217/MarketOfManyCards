@@ -84,12 +84,14 @@ export function CardAddMenu({
       style={styles.centeredView}
     >
       <View style={styles.modalView} className="bg-slate-800">
-        <SearchBar
-          clicked={clicked}
-          setClicked={setClicked}
-          searchTerm={term}
-          setSearchTerm={(newTerm) => setTerm(newTerm)}
-        />
+        <View className="flex-row">
+          <SearchBar
+            clicked={clicked}
+            setClicked={setClicked}
+            searchTerm={term}
+            setSearchTerm={(newTerm) => setTerm(newTerm)}
+          />
+        </View>
         <FlatList
           showsVerticalScrollIndicator={false}
           data={cards}
@@ -100,14 +102,14 @@ export function CardAddMenu({
         <View
           style={{
             borderRadius: 25,
-            padding: 15,
             marginTop: 5,
             width: 150,
             alignItems: "center",
+            flexDirection: "row",
           }}
           className="bg-sky-700"
         >
-          <Pressable onPress={closing} style={{}}>
+          <Pressable onPress={closing} className="flex-1 p-4 items-center">
             <Text className="text-slate-100">Close</Text>
           </Pressable>
         </View>
