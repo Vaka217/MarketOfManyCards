@@ -28,11 +28,12 @@ import DropDownPicker from "react-native-dropdown-picker";
 
 export default function PostScreen() {
   const [showModal, setShowModal] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [isSale, setIsSale] = useState(true);
   const [cardQuality, setCardQuality] = useState("");
-  const [cardQuantity, setCardQuantity] = useState();
+  const [cardQuantity, setCardQuantity] = useState("");
   const [placeholder, setPlaceholder] = useState(styles.imagePlaceholder);
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState([

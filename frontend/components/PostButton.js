@@ -1,5 +1,5 @@
 //import { useEffect, useState } from '@react-navigation/native';
-import { Pressable, Text, View, StyleSheet } from "react-native";
+import { Pressable, Text, View, StyleSheet, Modal, Animated } from "react-native";
 import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { Context as AuthContext } from "../contexts/AuthContext";
@@ -16,6 +16,10 @@ export function PostButton({
   const { state } = useContext(AuthContext);
   const [postCheck, setPostCheck] = useState(false);
   const generatePost = () => {
+    if (price === "" || description === "" || cardQuantity === "" || cardQuality === "" || post === "") {
+      console.log("Unable to create post, missing fields");
+      return
+    }
     let saleObject = {
       price: price,
       description: description,
