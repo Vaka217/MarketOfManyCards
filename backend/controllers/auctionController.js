@@ -65,7 +65,7 @@ const createAuction = async (req, res) => {
     // Busca dentro del usuario
     const userProfile = await User.findOne({
       where: { id: userId },
-      attributes: ["nickname", "profilePic"],
+      attributes: ["nickname", "profilePic", "contact"],
     });
 
     // Crea una nueva venta en la base de datos
@@ -95,6 +95,7 @@ const createAuction = async (req, res) => {
       user: {
         nickname: userProfile.nickname,
         profilePic: userProfile.profilePic,
+        contact: userProfile.contact,
       },
       card: {
         name: cardInstance.name,
@@ -184,9 +185,6 @@ const response = {
 const searchAuctions = async (req, res) => {
   try {
     const post = await Auction.findAll({
-      where: {
-        card_id: id,
-      },
       //limit: 10,
       order: [["createdAt", "DESC"]],
     });
@@ -198,7 +196,7 @@ const searchAuctions = async (req, res) => {
         // busca dentro de user
         const userProfile = await User.findOne({
           where: { id: seller_id },
-          attributes: ["nickname", "profilePic"],
+          attributes: ["nickname", "profilePic", "contact"],
         });
 
         // busca dentro de cards
@@ -211,6 +209,7 @@ const searchAuctions = async (req, res) => {
           user: {
             nickname: userProfile.nickname,
             profilePic: userProfile.profilePic,
+            contact: userProfile.contact,
           },
           card: {
             name: card.name,
@@ -247,7 +246,7 @@ const searchAuctionById = async (req, res) => {
         // busca dentro de user
         const userProfile = await User.findOne({
           where: { id: seller_id },
-          attributes: ["nickname", "profilePic"],
+          attributes: ["nickname", "profilePic", "contact"],
         });
 
         // busca dentro de cards
@@ -260,6 +259,7 @@ const searchAuctionById = async (req, res) => {
           user: {
             nickname: userProfile.nickname,
             profilePic: userProfile.profilePic,
+            contact: userProfile.contact,
           },
           card: {
             name: card.name,
@@ -306,6 +306,7 @@ const searchAuctionBycard = async (req, res) => {
           user: {
             nickname: userProfile.nickname,
             profilePic: userProfile.profilePic,
+            contact: userProfile.contact,
           },
           card: {
             name: card.name,
@@ -423,6 +424,7 @@ if (!auctionId || !actual_bid || !description || quantity === undefined || !card
       user: {
         nickname: userProfile.nickname,
         profilePic: userProfile.profilePic,
+        contact: userProfile.contact
       },
       card: {
         name: cardInstance.name,

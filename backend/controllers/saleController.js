@@ -45,7 +45,7 @@ const { price, description, quantity, cardData, condition, userId } =
     // Busca dentro del usuario
     const userProfile = await User.findOne({
       where: { id: userId },
-      attributes: ["nickname", "profilePic"],
+      attributes: ["nickname", "profilePic", "contact"],
     });
 
     // Crea una nueva venta en la base de datos
@@ -93,7 +93,7 @@ const searchSale = async (req, res) => {
         // busca dentro de user
         const userProfile = await User.findOne({
           where: { id: seller_id },
-          attributes: ["nickname", "profilePic"],
+          attributes: ["nickname", "profilePic", "contact"],
         });
 
         // busca dentro de cards
@@ -142,7 +142,7 @@ const searchSaleById = async (req, res) => {
         // busca dentro de user
         const userProfile = await User.findOne({
           where: { id: seller_id },
-          attributes: ["nickname", "profilePic"],
+          attributes: ["nickname", "profilePic", "contact"],
         });
 
         // busca dentro de cards
@@ -192,7 +192,7 @@ const searchSaleByCard = async (req, res) => {
         // busca dentro de user
         const userProfile = await User.findOne({
           where: { id: seller_id },
-          attributes: ["nickname", "profilePic"],
+          attributes: ["nickname", "profilePic", "contact"],
         });
 
         // busca dentro de cards
