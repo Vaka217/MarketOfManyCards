@@ -1,6 +1,7 @@
 const Sale = require('../models/Sale');
 const User = require('../models/User');
 const Card = require('../models/Card');
+const e = require('express');
 
 const createSale = async (req, res) => {
 const { price, description, quantity, cardData, condition, userId } =
@@ -59,7 +60,7 @@ const { price, description, quantity, cardData, condition, userId } =
     });
 
     const response = {
-      sale: sale,
+      sale,
       user: {
         nickname: userProfile.nickname,
         profilePic: userProfile.profilePic,
@@ -80,48 +81,26 @@ const { price, description, quantity, cardData, condition, userId } =
 
 const searchSale = async (req, res) => {
   try {
-    const sales = await Sale.findAll({
-      //limit: 10, // Limita el número de resultados a 10
-      include: [
-        {
-          model: User,
-          attributes: ["nickname", "profilePic"],
-        },
-        {
-          model: Card,
-          attributes: ["name", "card_image"],
-        },
-      ],
+    const sale = await Sale.findAll({
+      limit: 10,
+      order: [["createdAt", "DESC"]],
     });
 
-    return res.json(sales);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Ha ocurrido un error al realizar la búsqueda" });
-  }
-};
+    const response = await Promise.all(
+      sale.map(async (sale) => {
+        const { seller_id, card_id } = sale;
 
-const searchSaleById = async (req, res) => {
-    const { id } = req.params;
-    try {
-      const user = await User.findByPk(id);
-      if (!user) {
-        return res.status(404).json({ error: "Usuario no encontrado" });
-      }
-  
-      const sales = await Sale.findAll({
-        where: { seller_id: id },
-        include: [
-          { model: User, attributes: ["nickname", "profilePic"] },
-          { model: Card, attributes: ["name", "card_image"] },
-        ],
-        limit: 10,
-        order: [["createdAt", "DESC"]],
-      });
-  
-      const response = sales.map((sale) => {
-        const { User: userProfile, Card: card } = sale;
-  
+        // busca dentro de user
+        const userProfile = await User.findOne({
+          where: { id: seller_id },
+          attributes: ["nickname", "profilePic"],
+        });
+
+        // busca dentro de cards
+        const card = await Card.findByPk(card_id, {
+          attributes: ["name", "card_image"],
+        });
+
         return {
           sale,
           user: {
@@ -133,13 +112,55 @@ const searchSaleById = async (req, res) => {
             image: card.card_image,
           },
         };
-      });
-  
-      res.json(response);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Error al obtener las ventas del usuario" });
+      })
+    );
+
+    res.json(response);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al obtener las ventas" });
+  }
+};
+
+const searchSaleById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findByPk(id);
+    if (!user) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
     }
+
+    const sale = await Sale.findAll({
+      where: { seller_id: id },
+      include: [
+        { model: User, attributes: ["nickname", "profilePic"] },
+        { model: Card, attributes: ["name", "card_image"] },
+      ],
+      limit: 10,
+      order: [["createdAt", "DESC"]],
+    });
+
+    const response = sale.map((sale) => {
+      const { User: userProfile, Card: card } = sale;
+
+      return {
+        sale,
+        user: {
+          nickname: userProfile.nickname,
+          profilePic: userProfile.profilePic,
+        },
+        card: {
+          name: card.name,
+          image: card.card_image,
+        },
+      };
+    });
+
+    res.json(response);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al obtener las ventas del usuario" });
+  }
 };
 
 const searchSaleByCard = async (req, res) => {
