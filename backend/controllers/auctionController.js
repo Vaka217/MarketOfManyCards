@@ -443,7 +443,7 @@ if (!auctionId || !actual_bid || !description || quantity === undefined || !card
 };
 
 // Sirve para aumentar/disminuir la cantidad de la subasta asi como para eliminarla
-const updateSaleQuantity = async (req, res) => {
+const updateAuctionQuantity = async (req, res) => {
   const { quantity } = req.body;
   const { id } = req.params;
 
@@ -459,7 +459,7 @@ const updateSaleQuantity = async (req, res) => {
     }
 
     if (quantity === 0) {
-      await sale.destroy();
+      await auction.destroy();
       return res.json({ message: "La subasta ha sido eliminada" });
     }
 
@@ -473,6 +473,22 @@ const updateSaleQuantity = async (req, res) => {
   }
 };
 
+const deleteAuction = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const auction = await Auction.findByPk(id);
+
+    if (!auction) {
+      return res.status(404).json({ error: "Subasta no encontrada" });
+    }
+
+    await auction.destroy();
+    return res.status(200).json({ message: "La subasta ha sido eliminada exitosamente." });
+  } catch (error) {
+    return res.status(500).json({ error: "Ha ocurrido un error al eliminar la subasta." });
+  }
+}
+
 module.exports = {
   createAuction,
   makeBid,
@@ -481,5 +497,6 @@ module.exports = {
   searchAuctionById,
   searchAuctionBycard,
   updateAuction,
+  deleteAuction,
   updateAuctionQuantity,
 };

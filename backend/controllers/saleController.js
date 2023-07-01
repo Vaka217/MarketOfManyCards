@@ -249,6 +249,22 @@ const searchSaleByCard = async (req, res) => {
       return res.status(500).json({ error: "Ha ocurrido un error al actualizar la subasta" });
     }
   };
+  const deleteSale = async (req, res) => {
+    const { id } = req.params;
+    try {
+      const sale = await Sale.findByPk(id);
+  
+      if (!sale) {
+        return res.status(404).json({ error: "Subasta no encontrada" });
+      }
+  
+      await sale.destroy();
+      return res.status(200).json({ message: "La venta ha sido eliminada exitosamente." });
+    } catch (error) {
+      return res.status(500).json({ error: "Ha ocurrido un error al eliminar la venta." });
+    }
+  }
+  
 
 module.exports = {
     createSale,
@@ -256,4 +272,5 @@ module.exports = {
     searchSaleById,
     searchSaleByCard,
     updateSaleQuantity,
+    deleteSale,
   };

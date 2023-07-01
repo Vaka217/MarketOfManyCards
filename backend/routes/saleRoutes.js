@@ -7,5 +7,7 @@ router.get("/searchsales", saleController.searchSale);
 router.get("/searchsale/:id", saleController.searchSaleById);
 router.get("/searchsalebycard/:id", saleController.searchSaleByCard);
 router.put("/updatesalequantity/:id", saleController.updateSaleQuantity);
+router.delete("/deletesale/:id", saleController.deleteSale);
+
 
 module.exports = router;

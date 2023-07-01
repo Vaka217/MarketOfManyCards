@@ -10,6 +10,7 @@ router.get("/searchauction/:id", auctionController.searchAuctionById);
 router.get("/searchauctionbycard/:id", auctionController.searchAuctionBycard);
 router.put("/updateauction", auctionController.updateAuction);
 router.put("/updateauctionquantity/:id", auctionController.updateAuctionQuantity);
+router.delete("/deleteauction/:id", auctionController.deleteAuction);
 
 
 module.exports = router;
