@@ -293,7 +293,7 @@ const searchAuctionBycard = async (req, res) => {
         // busca dentro de user
         const userProfile = await User.findOne({
           where: { id: seller_id },
-          attributes: ["nickname", "profilePic"],
+          attributes: ["nickname", "profilePic", "contact"],
         });
 
         // busca dentro de cards
@@ -380,7 +380,7 @@ if (!auctionId || !actual_bid || !description || quantity === undefined || !card
     // Busca dentro del usuario
     const userProfile = await User.findOne({
       where: { id: userId },
-      attributes: ["nickname", "profilePic"],
+      attributes: ["nickname", "profilePic", "contact"],
     });
 
     // Actualiza la subasta en la base de datos
@@ -443,22 +443,23 @@ if (!auctionId || !actual_bid || !description || quantity === undefined || !card
 };
 
 // Sirve para aumentar/disminuir la cantidad de la subasta asi como para eliminarla
-const updateAuctionQuantity = async (req, res) => {
-  const { auctionId, quantity } = req.body;
+const updateSaleQuantity = async (req, res) => {
+  const { quantity } = req.body;
+  const { id } = req.params;
 
-  if (!auctionId || quantity === undefined) {
+  if (!id || quantity === undefined) {
     return res.status(400).json({ error: "Por favor, proporciona el ID de la subasta y la cantidad" });
   }
 
   try {
-    const auction = await Auction.findByPk(auctionId);
+    const auction = await Auction.findByPk(id);
 
     if (!auction) {
       return res.status(404).json({ error: "Subasta no encontrada" });
     }
 
     if (quantity === 0) {
-      await auction.destroy();
+      await sale.destroy();
       return res.json({ message: "La subasta ha sido eliminada" });
     }
 

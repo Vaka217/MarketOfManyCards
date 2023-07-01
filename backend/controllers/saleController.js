@@ -220,34 +220,35 @@ const searchSaleByCard = async (req, res) => {
   }
 };
   // Sirve para aumentar/disminuir la cantidad de la venta asi como para eliminarla
-const updateSaleQuantity = async (req, res) => {
-  const { saleId, quantity } = req.body;
-
-  if (!saleId || quantity === undefined) {
-    return res.status(400).json({ error: "Por favor, proporciona el ID de la venta y la cantidad" });
-  }
-
-  try {
-    const post = await Sale.findByPk(saleId);
-
-    if (!post) {
-      return res.status(404).json({ error: "Venta no encontrada" });
+  const updateSaleQuantity = async (req, res) => {
+    const { quantity } = req.body;
+    const { id } = req.params;
+  
+    if (!id || quantity === undefined) {
+      return res.status(400).json({ error: "Por favor, proporciona el ID de la subasta y la cantidad" });
     }
-
-    if (quantity === 0) {
-      await post.destroy();
-      return res.json({ message: "La venta ha sido eliminada" });
+  
+    try {
+      const sale = await Sale.findByPk(id);
+  
+      if (!sale) {
+        return res.status(404).json({ error: "Subasta no encontrada" });
+      }
+  
+      if (quantity === 0) {
+        await sale.destroy();
+        return res.json({ message: "La subasta ha sido eliminada" });
+      }
+  
+      sale.quantity = quantity;
+      await sale.save();
+  
+      return res.json({ message: "La subasta ha sido actualizada" });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: "Ha ocurrido un error al actualizar la subasta" });
     }
-
-    sale.quantity = quantity;
-    await post.save();
-
-    return res.json({ message: "La venta ha sido actualizada" });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Ha ocurrido un error al actualizar la venta" });
-  }
-};
+  };
 
 module.exports = {
     createSale,
