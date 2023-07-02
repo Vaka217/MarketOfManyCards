@@ -171,11 +171,18 @@ const winners = await Bid.findAll({
   where: { auction_id: auction_id },
   limit: 3,
   order: [["amount", "DESC"]],
+  include: [
+    {
+      model: User,
+      attributes: ['contact'],
+    },
+  ],
 });
 const response = {
   bids: winners.map((winner) => ({
     bidder_id: winner.bidder_id,
     amount: winner.amount,
+    contact: winner.User.contact,
   })),
 };
     return res.status(200).json(response);
@@ -326,18 +333,13 @@ const searchAuctionBycard = async (req, res) => {
 
 // este es una prueba //
 const updateAuction = async (req, res) => {
-  const { auctionId, actual_bid, description, quantity, cardData, condition, userId } = req.body;
+  const { auctionId, actual_bid, description, quantity, condition } = req.body;
 
   // Antes de la validación de datos existente
-if (!auctionId || !actual_bid || !description || quantity === undefined || !cardData || !condition) {
+if (!auctionId || !actual_bid || !description || quantity === undefined || !condition) {
   return res.status(400).json({ error: "Por favor, completa todos los campos obligatorios" });
 }
   try {
-    const user = await User.findByPk(userId);
-    if (!user) {
-      return res.status(404).json({ error: "Usuario no encontrado" });
-    }
-
     // Validación de fechas
     const startTime = new Date();
     const endTime = new Date(startTime.getTime() + 7 * 24 * 60 * 60 * 1000);
@@ -349,42 +351,6 @@ if (!auctionId || !actual_bid || !description || quantity === undefined || !card
       return res.status(400).json({ error: 'La fecha de inicio debe ser anterior a la fecha de finalización' });
     }
 
-    // Extrae los valores necesarios del objeto
-    const { id, name, type, image, manaCost, text, set, loyalty, cmc, flavor_text, number, power, toughness, multiverse_id } = JSON.parse(cardData);
-
-    // Busca la instancia de la carta en la base de datos
-    let cardInstance = await Card.findOne({ where: { card_id: id } });
-
-    if (!cardInstance) {
-      // Si la carta no existe, crea una nueva instancia
-      const createdCard = await Card.create({
-        card_id: id,
-        name: name,
-        set: set,
-        mana_cost: manaCost,
-        cmc: cmc,
-        type: type,
-        text: text,
-        flavor_text: flavor_text,
-        number: number,
-        power: power,
-        toughness: toughness,
-        loyalty: loyalty,
-        multiverse_id: multiverse_id,
-        card_image: image,
-        
-      });
-
-      // Asigna la nueva instancia de la carta al objeto cardInstance
-      cardInstance = createdCard;
-    }
-
-    // Busca dentro del usuario
-    const userProfile = await User.findOne({
-      where: { id: userId },
-      attributes: ["nickname", "profilePic", "contact"],
-    });
-
     // Actualiza la subasta en la base de datos
     const post = await Auction.findByPk(auctionId);
     if (!post) {
@@ -394,7 +360,6 @@ if (!auctionId || !actual_bid || !description || quantity === undefined || !card
     post.actual_bid = actual_bid;
     post.description = description;
     post.quantity = quantity;
-    post.card_id = cardInstance.card_id;
     post.condition = condition;
     post.start_time = startTime;
     post.end_time = endTime;
@@ -407,32 +372,6 @@ if (!auctionId || !actual_bid || !description || quantity === undefined || !card
       // Guardar los cambios en la subasta
       await post.save();
     }
-
-    // Crea o actualiza la oferta en la base de datos
-    let bid = await Bid.findOne({ where: { auction_id: auctionId, bidder_id: userId } });
-    if (!bid) {
-      bid = await Bid.create({
-        auction_id: auctionId,
-        bidder_id: userId,
-        amount: actual_bid,
-      });
-    } else {
-      bid.amount = actual_bid;
-      await bid.save();
-    }
-
-    const response = {
-      post,
-      user: {
-        nickname: userProfile.nickname,
-        profilePic: userProfile.profilePic,
-        contact: userProfile.contact
-      },
-      card: {
-        name: cardInstance.name,
-        image: cardInstance.card_image,
-      },
-    };
 
     return res.json(response);
 
