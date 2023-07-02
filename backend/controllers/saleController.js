@@ -205,6 +205,7 @@ const searchSaleByCard = async (req, res) => {
           user: {
             nickname: userProfile.nickname,
             profilePic: userProfile.profilePic,
+            contact: userProfile.contact,
           },
           card: {
             name: card.name,

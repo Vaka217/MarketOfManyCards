@@ -1,6 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../database/connection');
 
+
 const Card = sequelize.define('Card', {
   card_id: {
     type: DataTypes.STRING,
@@ -29,3 +30,4 @@ const Card = sequelize.define('Card', {
 
 
 module.exports = Card;
+

@@ -283,7 +283,9 @@ const searchAuctionBycard = async (req, res) => {
       return res.status(404).json({ error: "Carta no encontrada" });
     }
     const post = await Auction.findAll({
-      limit: 10,
+      where: {
+        card_id: id,
+      },
       order: [["createdAt", "DESC"]],
     });
     const response = await Promise.all(
@@ -489,6 +491,88 @@ const deleteAuction = async (req, res) => {
   }
 }
 
+const getUserBids = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const user = await User.findByPk(id);
+    if (!user) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    const auctionIds = await Bid.findAll({
+      attributes: ["auction_id", "amount"],
+      where: { bidder_id: id },
+      order: [["amount", "DESC"]],
+      raw: true,
+    });
+
+    const auctionIdsArray = auctionIds.map((bid) => bid.auction_id);
+
+    const auctions = await Auction.findAll({
+      where: { id: auctionIdsArray },
+      include: [
+        {
+          model: User,
+          attributes: ["nickname", "profilePic", "contact"],
+        },
+        {
+          model: Bid,
+          attributes: ["amount"],
+          where: { bidder_id: id },
+        },
+        {
+          model: Card,
+          attributes: ["name", "card_image"],
+        },
+      ],
+    });
+
+    const response = auctions.map((auction) => {
+      const { id, condition, start_time, end_time, actual_bid, description, quantity, created_at, updated_at, User, Card, Bids } = auction;
+      const { nickname, profilePic, contact } = User;
+      const { name, card_image } = Card;
+      const amount = Bids.length > 0 ? Math.max(...Bids.map((bid) => bid.amount)) : null;
+
+      return {
+        post: {
+          id,
+          condition,
+          start_time,
+          end_time,
+          actual_bid,
+          description,
+          quantity,
+          created_at,
+          updated_at,
+          seller_id: auction.seller_id,
+          card_id: auction.card_id,
+          status: auction.status,
+          createdAt: auction.createdAt,
+          updatedAt: auction.updatedAt,
+        },
+        user: {
+          nickname,
+          profilePic,
+          contact,
+        },
+        card: {
+          name,
+          image: card_image,
+        },
+        bid: {
+          amount,
+        },
+      };
+    });
+
+    res.json(response);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al obtener las ventas" });
+  }
+};
+
 module.exports = {
   createAuction,
   makeBid,
@@ -499,4 +583,5 @@ module.exports = {
   updateAuction,
   deleteAuction,
   updateAuctionQuantity,
+  getUserBids,
 };

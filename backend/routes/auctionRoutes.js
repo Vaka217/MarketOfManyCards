@@ -11,6 +11,8 @@ router.get("/searchauctionbycard/:id", auctionController.searchAuctionBycard);
 router.put("/updateauction", auctionController.updateAuction);
 router.put("/updateauctionquantity/:id", auctionController.updateAuctionQuantity);
 router.delete("/deleteauction/:id", auctionController.deleteAuction);
+router.get("/getuserbids/:id", auctionController.getUserBids);
+
 
 
 module.exports = router;
