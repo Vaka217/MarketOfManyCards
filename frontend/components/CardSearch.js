@@ -18,8 +18,6 @@ const CardSearch = ({ name, mana_cost, type, set, text, card_image, card_id }) =
   const maxSymbols = 4;
   const hasMoreSymbols = symbols.length > maxSymbols;
 
-  console.log(symbols.slice(0, maxSymbols));
-
   return (
     <TouchableWithoutFeedback
       onPress={() => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   Text,
@@ -13,16 +13,23 @@ import {
 import { FontAwesome } from "@expo/vector-icons";
 import MyButton from "./myButton";
 import WhatsAppButton from "./WhatsAppButton";
-import { Avatar, Button } from "react-native-elements";
+import { Avatar, Button, Input } from "react-native-elements";
 import axios from "axios";
+import { InfoContext } from "../contexts/InfoContext";
+import {Context as AuthContext} from "../contexts/AuthContext";
+import EditPostForm from "./EditPostForm";
 
-const Post = ({ user, card, post, type, isUser }) => {
+const Post = ({ post, card, user, type, isUser }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isBuying, setIsBuying] = useState(false);
   const [selectedValue, setSelectedValue] = isUser ? useState(post.quantity) : useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const { setSalesUserData, setAuctionsUserData, salesUserData, auctionsUserData } = useContext(InfoContext);
+  const [bidAmount, setBidAmount] = useState(post.actual_bid);
+  const {state} = useContext(AuthContext);
+  const [first, setFirst] = useState(true);
 
   const handleVisible = () => {
     setIsVisible(!isVisible);
@@ -41,10 +48,9 @@ const Post = ({ user, card, post, type, isUser }) => {
     return Array.from({ length: quantity + 1 }, (_, index) => index);
   };
 
-  {isUser && (
-    useEffect(() => {
+  useEffect(() => {
+    if (isUser && !first) {
       const timer = setTimeout(() => {
-        console.log(post.id);
         axios.put(`http://18.229.90.36:3000/updatesalequantity/${post.id}`, { quantity: selectedValue, saleId: post.id })
           .then(response => {
             console.log("PUT request successful");
@@ -55,13 +61,16 @@ const Post = ({ user, card, post, type, isUser }) => {
       }, 3000);
 
       return () => clearTimeout(timer);
-    }, [selectedValue])
-  )};
+    } else {
+      setFirst(false);
+    }
+  }, [selectedValue]);
+
 
 
   const handleWhatsappPress = (message) => {
 
-    const url = `https://api.whatsapp.com/send?phone=59895881582&text=${encodeURIComponent(
+    const url = `https://api.whatsapp.com/send?phone=${user.contact}&text=${encodeURIComponent(
       message
     )}`;
 
@@ -75,6 +84,15 @@ const Post = ({ user, card, post, type, isUser }) => {
       })
       .catch((error) => console.log("Error opening WhatsApp:", error));
   };
+
+  const handleBid = async () => {
+    try {
+      const response = await axios.post("http://18.229.90.36:3000/makebid", { auctionId: post.id, userId: state.userId, bidAmount: bidAmount });
+      console.log("Bid creada con éxito");
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
 
   return (
     <View className="px-3 w-full">
@@ -112,6 +130,7 @@ const Post = ({ user, card, post, type, isUser }) => {
               <View className="flex-row ml-1 h-10">
                 {!isUser ? (
                 <>
+                { type == "Sales" ? (
                   <View className="justify-center flex-col items-center flex-1">
                     <TouchableWithoutFeedback onPress={handlePress}>
                       <View className="flex-row justify-between border-sky-900 border-2 rounded-lg flex-1 items-center">
@@ -152,13 +171,22 @@ const Post = ({ user, card, post, type, isUser }) => {
                         </View>
                       </Modal>
                   </View>
+                ) : (
+                  <Text className="text-xl font-bold text-slate-100 text-center flex-1 bg-sky-900 h-10 p-1 rounded-lg">
+                    {post.quantity} {post.quantity > 1 ? "Cards" : "Card"}
+                  </Text>
+                )
+                }
                   <View className="flex-1 ml-1">
                     <MyButton type={type} setIsBuying={setIsBuying} isBuying={isBuying} />
                   </View>
                   <Modal transparent={true} visible={isBuying} className="flex-1" >
                         <View className="rounded-b-lg flex-1 justify-center" style={{backgroundColor: "rgba(0, 0, 0, 0.5)"}}>
                           <View className="bg-sky-900 p-2 m-8 rounded-lg items-center max-h-96">
-                            <Text className="text-xl font-bold text-slate-100 text-center my-3">Are you sure you want to {type == "Auctions" ? "put a bid? It will appear in your Profile" : "buy? It will open a chat with the seller"}</Text>
+                            <Text className="text-xl font-bold text-slate-100 text-center my-3">Are you sure you want to {type == "Auctions" ? "put a bid? You cannot undo this" : "buy? It will open a chat with the seller"}</Text>
+                            {type == "Auctions" && (
+                              <Input label="Bid Amount:" value={bidAmount} onChangeText={setBidAmount} labelStyle={styles.label} inputStyle={styles.label} keyboardType="numeric" />
+                            )}
                             <Button
                               title="Confirm"
                               loading={false}
@@ -177,7 +205,9 @@ const Post = ({ user, card, post, type, isUser }) => {
                               onPress={() => {
                                 if (type == "Sales") {
                                   handleWhatsappPress(`Hi ${user.nickname}, I contact you for buying ${post.quantity} of your ${card.name} sale.`);
-                                };
+                                } else {
+                                  handleBid();
+                                }
                                 setIsBuying(!isBuying);
                               }}
                             />
@@ -206,72 +236,41 @@ const Post = ({ user, card, post, type, isUser }) => {
                 </>
                   ) : (
                     <View className="justify-center flex-row items-center flex-1">
-                      <View className="flex-row justify-between border-2 border-sky-900 rounded-lg items-center flex-1 bg-sky-900 h-full">
-                        <Pressable onPress={() => setSelectedValue(selectedValue + 1)} style={{flex: 1}}>
-                          <FontAwesome name="plus" size={24} color="rgb(241 245 249)" style={{flex: 1, textAlign: "center", verticalAlign:"middle"}} />
+                      {type == "Sales" && (
+                        <View className="flex-row justify-between border-2 border-sky-900 rounded-lg items-center flex-1 bg-sky-900 h-full mr-1">
+                          <Pressable onPress={() => setSelectedValue(selectedValue + 1)} style={{flex: 1}}>
+                            <FontAwesome name="plus" size={24} color="rgb(241 245 249)" style={{flex: 1, textAlign: "center", verticalAlign:"middle"}} />
+                          </Pressable>
+                          <Text className="text-xl font-bold text-sky-900 text-center flex-1 bg-slate-100 h-full p-1">
+                            {selectedValue}
+                          </Text>
+                          <Pressable onPress={() => setSelectedValue(selectedValue === 0 ? 0 : selectedValue - 1)} style={{flex: 1}}>
+                            <FontAwesome name="minus" size={24} color="rgb(241 245 249)" style={{flex: 1, textAlign: "center", verticalAlign:"middle"}} />
+                          </Pressable>
+                        </View>
+                      )}
+                      <View className="flex-1 flex-row h-full">
+                        {type != "Sales" && (
+                          <View className="flex-row flex-1 mr-1">
+                          <Text className="text-xl font-bold text-slate-100 text-center flex-1 bg-sky-900 h-10 p-1 rounded-lg mr-1">
+                            {post.quantity}
+                          </Text>
+                        <Pressable style={{flex: 1}} onPress={() => {setIsEditModalVisible(!isEditModalVisible)}}>
+                          <FontAwesome name="money" size={24} color="rgb(241 245 249)" style={{flex: 1, backgroundColor: "rgb(21 128 61)", height: "100%", textAlign: "center", verticalAlign: "middle", borderRadius: 8}} />
                         </Pressable>
-                        <Text className="text-xl font-bold text-sky-900 text-center flex-1 bg-slate-100 h-full p-1">
-                          {selectedValue}
-                        </Text>
-                        <Pressable onPress={() => setSelectedValue(selectedValue === 0 ? 0 : selectedValue - 1)} style={{flex: 1}}>
-                          <FontAwesome name="minus" size={24} color="rgb(241 245 249)" style={{flex: 1, textAlign: "center", verticalAlign:"middle"}} />
-                        </Pressable>
-                      </View>
-                      <View className="flex-1 flex-row h-full ml-1">
+                        </View>
+                        )}
+                        <View className="flex-1 flex-row">
                         <Pressable style={{flex: 1}} onPress={() => {setIsEditModalVisible(!isEditModalVisible)}}>
                           <FontAwesome name="pencil" size={24} color="rgb(241 245 249)" style={{flex: 1, backgroundColor: "rgb(234 179 8)", height: "100%", textAlign: "center", verticalAlign: "middle", borderRadius: 8}} />
                         </Pressable>
                         <Modal transparent={true} visible={isEditModalVisible} className="flex-1" >
-                        <View className="rounded-b-lg flex-1 justify-center" style={{backgroundColor: "rgba(0, 0, 0, 0.5)"}}>
-                          <View className="bg-sky-900 p-2 m-8 rounded-lg items-center max-h-96">
-                            <Text className="text-xl font-bold text-slate-100 text-center my-3">Are you sure you want to {type == "Auctions" ? "put a bid? It will appear in your Profile" : "buy? It will open a chat with the seller"}</Text>
-                            <Button
-                              title="Confirm"
-                              loading={false}
-                              loadingProps={{ size: "small", color: "white" }}
-                              buttonStyle={{
-                                backgroundColor: "green",
-                                borderRadius: 5,
-                              }}
-                              titleStyle={{ fontWeight: "bold", fontSize: 24 }}
-                              containerStyle={{
-                                height: 50,
-                                width: 200,
-                                justifyContent: "center",
-                                marginBottom: 12
-                              }}
-                              onPress={() => {
-                                if (type == "Sales") {
-                                  handleWhatsappPress(`Hi ${user.nickname}, I contact you for buying ${post.quantity} of your ${card.name} sale.`);
-                                };
-                                setIsBuying(!isBuying);
-                              }}
-                            />
-                            <Button
-                              title="Cancel"
-                              loading={false}
-                              loadingProps={{ size: "small", color: "white" }}
-                              buttonStyle={{
-                                backgroundColor: "red",
-                                borderRadius: 5,
-                              }}
-                              titleStyle={{ fontWeight: "bold", fontSize: 24 }}
-                              containerStyle={{
-                                height: 50,
-                                width: 200,
-                                justifyContent: "center",
-                                marginBottom: 12
-                              }}
-                              onPress={() => {
-                                setIsEditModalVisible(!isEditModalVisible);
-                              }}
-                            />
-                          </View>
-                        </View>
-                      </Modal>
+                          <EditPostForm isModal={isEditModalVisible} toggleModal={setIsEditModalVisible} postData={post} />
+                        </Modal>
                       <Pressable style={{flex: 1}} onPress={() => {setIsDeleteModalVisible(!isDeleteModalVisible)}}>
                         <FontAwesome name="trash" size={24} color="rgb(241 245 249)" style={{flex: 1, backgroundColor: "rgb(153 27 27)", height: "100%", textAlign: "center", verticalAlign: "middle", borderRadius: 8, marginLeft: 4}} />
                       </Pressable>
+                      </View>
                         <Modal transparent={true} visible={isDeleteModalVisible} className="flex-1" >
                         <View className="rounded-b-lg flex-1 justify-center" style={{backgroundColor: "rgba(0, 0, 0, 0.5)"}}>
                           <View className="bg-sky-900 p-2 m-8 rounded-lg items-center max-h-96">
@@ -293,10 +292,36 @@ const Post = ({ user, card, post, type, isUser }) => {
                               }}
                               onPress={() => {
                                 if (type == "Sales") {
-                                  handleWhatsappPress(`Hi ${user.nickname}, I contact you for buying ${post.quantity} of your ${card.name} sale.`);
-                                };
-                                setIsBuying(!isBuying);
-                              }}
+                                  const deleteSale = async () => {
+                                    try {
+                                      const response = await axios.delete(
+                                        `http://18.229.90.36:3000/deletesale/${post.id}`
+                                      );
+                                      console.log("Sale deleted successfully");
+                                    } catch (error) {
+                                      console.log(error);
+                                    }
+                                  };
+
+                                  deleteSale();
+                                  const newData = salesUserData.filter(item => item.post.id !== post.id);
+                                  setSalesUserData(newData);
+                                } else {
+                                  const deleteAuction = async () => {
+                                    try {
+                                      const response = await axios.delete(
+                                        `http://18.229.90.36:3000/deleteauction/${post.id}`
+                                      );
+                                      console.log("Auction deleted successfully");
+                                    } catch (error) {
+                                      console.log(error);
+                                    }
+                                  };
+
+                                  deleteAuction();
+                                  const newData = auctionsUserData.filter(item => item.post.id !== post.id);
+                                  setAuctionsUserData(newData);
+                              }}}
                             />
                             <Button
                               title="Cancel"
@@ -369,6 +394,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
     height: "80%",
   },
+  label: {
+    color: "rgb(241 245 249)",
+  }
 });
 
 export default Post;

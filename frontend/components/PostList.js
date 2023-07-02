@@ -1,15 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   FlatList,
   View,
   Text,
   TouchableWithoutFeedback,
-  TouchableHighlight,
+  ScrollView
 } from "react-native";
 import Post from "./Post";
+import { InfoContext } from "../contexts/InfoContext";
+import { HomeSkeleton } from "./HomeSkeleton";
 
-const PostList = ({ sales, auctions }) => {
+const PostList = ({ isLoading, card }) => {
   const [isAuctionsPressed, setIsAuctionsPressed] = useState(false);
+  const { salesData, auctionsData, salesCardData, auctionsCardData } = useContext(InfoContext);
+  const sales = card ? salesCardData : salesData;
+  const auctions = card ? auctionsCardData : auctionsData;
 
   return (
     <>
@@ -41,19 +46,25 @@ const PostList = ({ sales, auctions }) => {
           </View>
         </TouchableWithoutFeedback>
       </View>
-      <FlatList
-        data={isAuctionsPressed ? auctions : sales}
-        renderItem={({ item }) => {
-          if (isAuctionsPressed) {
-            return <Post {...item} type="Auctions" />;
-          } else {
-            return <Post {...item} type="Sales" />;
-          }
-        }}
-        keyExtractor={(item) => item.post.id}
-        className="bg-sky-700"
-        showsVerticalScrollIndicator={false}
-      />
+      { isLoading === false ? (
+        <FlatList
+          data={isAuctionsPressed ? auctions : sales}
+          renderItem={({ item }) => {
+            if (isAuctionsPressed) {
+              return <Post {...item} type="Auctions" />;
+            } else {
+              return <Post {...item} type="Sales" />;
+            }
+          }}
+          keyExtractor={(item) => item.post.id}
+          className="bg-sky-700"
+          showsVerticalScrollIndicator={false}
+        />
+      ) : (
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <HomeSkeleton chosenColor={"rgb(3, 105, 161)"} cardHeight={110} textHeight={30} textWidth={225}/>
+        </ScrollView>
+      )}
     </>
   );
 };

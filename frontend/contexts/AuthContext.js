@@ -33,7 +33,7 @@ const tryLocalSignin =
       dispatch({ type: "signin", payload: { token, userId } });
       navigation.navigate("Main");
     } else {
-      navigation.navigate("Signup");
+      navigation.navigate("Signin");
     }
   };
 

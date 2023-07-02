@@ -13,27 +13,26 @@ import {
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import Post from "../components/Post";
-import Confirmation from "../components/Confirmation";
 import FormModal from "../components/FormModal";
 import { Modal } from "react-native";
 import { Context as AuthContext } from "../contexts/AuthContext";
 import { useNavigation } from "@react-navigation/native";
 import { Avatar } from "react-native-elements";
 import axios from "axios";
+import { InfoContext } from "../contexts/InfoContext";
+import Bid from "../components/Bid";
 
-options = ["Sales", "Auctions", "Bids", "Transactions"];
+options = ["Sales", "Auctions", "Bids"];
 
 const ProfileScreen = () => {
   const [isPressed, setIsPressed] = useState("Sales");
   const [viewWidth, setViewWidth] = useState(0);
   const [isModal, setIsModal] = useState(false);
   const { state, signout } = useContext(AuthContext);
-  const [salesData, setSalesData] = useState();
   const [profileData, setProfileData] = useState();
-  const [auctionsData, setAuctionsData] = useState();
+  const {salesUserData, auctionsUserData, setSalesUserData, setAuctionsUserData} = useContext(InfoContext);
+  const [bidsData, setBidsData] = useState(null);
   const navigation = useNavigation();
-
-  console.log(state);
 
   useEffect(() => {
     const fetchSalesData = async () => {
@@ -42,10 +41,8 @@ const ProfileScreen = () => {
           `http://18.229.90.36:3000/searchsale/${state.userId}`
         );
         const salesData = response.data;
-        console.log(state);
-        setSalesData(salesData);
+        setSalesUserData(salesData);
       } catch (error) {
-        console.log(state.userId, "aaaaa");
         console.log(error);
       }
     };
@@ -56,10 +53,8 @@ const ProfileScreen = () => {
           `http://18.229.90.36:3000/searchauction/${state.userId}`
         );
         const auctionsData = response.data;
-        console.log(state);
-        setAuctionsData(auctionsData);
+        setAuctionsUserData(auctionsData);
       } catch (error) {
-        console.log(state.userId, "aaaaa");
         console.log(error);
       }
     };
@@ -72,7 +67,18 @@ const ProfileScreen = () => {
         const profileData = response.data;
         setProfileData(profileData);
       } catch (error) {
-        console.log(state.userId, "aaaaa");
+        console.log(error);
+      }
+    };
+
+    const fetchBidsData = async () => {
+      try {
+        const response = await axios.get(
+          `http://18.229.90.36:3000/getuserbids/${state.userId}`
+        );
+        const bidsData = response.data;
+        setBidsData(bidsData);
+      } catch (error) {
         console.log(error);
       }
     };
@@ -80,6 +86,7 @@ const ProfileScreen = () => {
     fetchProfileData();
     fetchSalesData();
     fetchAuctionsData();
+    fetchBidsData();
   }, []);
 
   const handleLayout = (event) => {
@@ -94,11 +101,11 @@ const ProfileScreen = () => {
   return (
     <SafeAreaView className="flex-1 bg-sky-900">
       <Modal visible={isModal} transparent={true} onRequestClose={toggleModal}>
-        <FormModal isModal={isModal} toggleModal={toggleModal} />
+        <FormModal isModal={isModal} toggleModal={toggleModal} profileData={profileData} />
       </Modal>
       <View className="items-center pb-4" style={styles.container}>
         <Text className="text-slate-100 text-base font-bold my-3">
-          JuanCarlos
+          afileData.nickname
         </Text>
         <Pressable
           onPress={() => {
@@ -131,7 +138,7 @@ const ProfileScreen = () => {
                   }}
                 >
                   <View
-                    style={{ width: viewWidth / 3.2 }}
+                    style={{ width: viewWidth / 3 }}
                     className={`h-10 flex-1 items-center justify-center ${
                       isPressed === item ? "bg-sky-700" : "bg-sky-900"
                     }
@@ -148,15 +155,24 @@ const ProfileScreen = () => {
             horizontal={true}
             showsHorizontalScrollIndicator={false}
           />     
+        </View>
+        {isPressed != "Bids" ? (
           <FlatList
-            data={isPressed === "Auctions" ? auctionsData : salesData}
+            data={isPressed === "Auctions" ? auctionsUserData : salesUserData}
             renderItem={({ item }) => (
               <Post {...item} type={isPressed} isUser />
-  )}
+            )}
             keyExtractor={(item) => item.post.id}
             showsVerticalScrollIndicator={false}
           />
-        </View>
+        ) : (
+          <FlatList data={bidsData} renderItem={({ item }) => (
+              <Bid {...item} />
+            )}
+            keyExtractor={(item) => item.post.id}
+            showsVerticalScrollIndicator={false}
+          />
+        )}
       </View>
     </SafeAreaView>
   );

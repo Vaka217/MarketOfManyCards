@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {
   View,
   Text,
@@ -14,25 +14,30 @@ import SymbologyData from "../manaDict";
 import { SvgUri } from "react-native-svg";
 import { Modal } from "react-native";
 import axios from "axios";
+import { InfoContext } from "../contexts/InfoContext";
 
 const CardScreen = () => {
   const route = useRoute();
   const { name, mana_cost, type, set, text, card_image, card_id } = route.params;
-  const [cardSales, setCardSales] = useState(null);
-  const [cardAuctions, setCardAuctions] = useState(null);
   const symbols = mana_cost.match(/\{[^}]*\}/g);
   const maxSymbols = 4;
   const hasMoreSymbols = symbols.length > maxSymbols;
   const [expanded, setExpanded] = useState(false);
+  const [salesLoading, setSalesLoading] = useState(false);
+  const [auctionsLoading, setAuctionsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const {setSalesCardData, setAuctionsCardData} = useContext(InfoContext);
 
   useEffect(() => {
     const cardSales = async () => {
       try {
+        setSalesLoading(true);
         const response = await axios.get(
           `http://18.229.90.36:3000/searchsalebycard/${card_id}` 
         );
         console.log(response.data);
-        setCardSales(response.data);
+        setSalesCardData(response.data);
+        setSalesLoading(false);
       } catch (error) {
         console.log(error);
       }
@@ -40,11 +45,13 @@ const CardScreen = () => {
 
     const cardAuctions = async () => {
       try {
+        setAuctionsLoading(true);
         const response = await axios.get(
           `http://18.229.90.36:3000/searchauctionbycard/${card_id}` 
         );
         console.log(response.data);
-        setCardAuctions(response.data);
+        setAuctionsCardData(response.data);
+        setAuctionsLoading(false);
       } catch (error) {
         console.log(error);
       }
@@ -57,6 +64,10 @@ const CardScreen = () => {
   const expandImage = () => {
     setExpanded(!expanded);
   };
+
+  useEffect(() => {
+    salesLoading === true || auctionsLoading === true ? setIsLoading(true) : setIsLoading(false);
+  }, [salesLoading, auctionsLoading]);
 
   return (
     <SafeAreaView className="flex-1 bg-sky-900">
@@ -144,7 +155,7 @@ const CardScreen = () => {
           </View>
         </View>
       </View>
-      <PostList sales={cardSales} auctions={cardAuctions} />
+      <PostList isLoading={isLoading} card />
     </SafeAreaView>
   );
 };

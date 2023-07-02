@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   SafeAreaView,
   Image,
@@ -11,25 +11,28 @@ import PostList from "../components/PostList";
 import CardList from "../components/CardList";
 import useDebounce from "../hooks/useDebounce";
 import axios from "axios";
+import { InfoContext } from "../contexts/InfoContext";
 
 const HomeScreen = () => {
   const [term, setTerm] = useState("");
   const [clicked, setClicked] = useState(false);
-  const [salesData, setSalesData] = useState(null);
-  const [cardsData, setCardsData] = useState(null);
-  const [auctionsData, setAuctionsData] = useState(null);
+  const { setSalesData, setAuctionsData, setCardsData } = useContext(InfoContext);
+  const [salesLoading, setSalesLoading] = useState(false);
+  const [auctionsLoading, setAuctionsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const debouncedSearchValue = useDebounce(term, 1000);
 
   useEffect(() => {
     const fetchSalesData = async () => {
       try {
+        setSalesLoading(true);
         const response = await axios.get(
           "http://18.229.90.36:3000/searchsales"
         );
         const salesData = response.data;
         setSalesData(salesData);
-        console.log(salesData);
+        setSalesLoading(false);
       } catch (error) {
         console.log(error);
       }
@@ -37,12 +40,13 @@ const HomeScreen = () => {
 
     const fetchAuctionsData = async () => {
       try {
+        setAuctionsLoading(true);
         const response = await axios.get(
           "http://18.229.90.36:3000/searchauctions"
         );
         const auctionsData = response.data;
         setAuctionsData(auctionsData);
-        console.log(auctionsData);
+        setAuctionsLoading(false);
       } catch (error) {
         console.log(error);
       }
@@ -63,7 +67,12 @@ const HomeScreen = () => {
     fetchSalesData();
     fetchAuctionsData();
     fetchCardsData();
+    setIsLoading(false);
   }, []);
+
+  useEffect(() => {
+    salesLoading === true || auctionsLoading == true ? setIsLoading(true) : setIsLoading(false);
+  }, [salesLoading, auctionsLoading]);
 
   useEffect(() => {
     const backHandler = BackHandler.addEventListener(
@@ -93,9 +102,9 @@ const HomeScreen = () => {
         />
       </View>
       {term === "" ? (
-        <PostList sales={salesData} auctions={auctionsData} />
+        <PostList isLoading={isLoading} />
       ) : (
-        <CardList searchTerm={debouncedSearchValue} content={cardsData} />
+        <CardList searchTerm={debouncedSearchValue} />
       )}
     </SafeAreaView>
   );

@@ -1,8 +1,8 @@
-//import { useEffect, useState } from '@react-navigation/native';
 import { Pressable, Text, View, StyleSheet, Modal, Animated } from "react-native";
 import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { Context as AuthContext } from "../contexts/AuthContext";
+import { InfoContext } from "../contexts/InfoContext";
 
 export function PostButton({
   post,
@@ -14,6 +14,7 @@ export function PostButton({
   cardQuantity,
 }) {
   const { state } = useContext(AuthContext);
+  const { setSalesUserData, setAuctionsUserData, salesUserData, auctionUserData } = useContext(InfoContext);
   const [postCheck, setPostCheck] = useState(false);
   const generatePost = () => {
     if (price === "" || description === "" || cardQuantity === "" || cardQuality === "" || post === "") {
@@ -75,11 +76,12 @@ export function PostButton({
         actual_bid,
       });
       const newPost = response.data;
-      console.log("Funciona lol: ", newPost);
+      console.log(newPost);
+      postType ? setSalesUserData([...salesUserData, newPost]) : setAuctionsUserData([...auctionsUserData, newPost]);
       return newPost;
     } catch (error) {
       console.log(postType);
-      console.error("Error lol: ", error.response.data);
+      console.error("Error:", error.response.data);
     }
   };
 

@@ -9,6 +9,7 @@ import RegisterScreen from "./screens/RegisterScreen";
 import { MyTabs } from "./components/BottomNav";
 
 import { Provider as AuthProvider } from "./contexts/AuthContext";
+import { InfoProvider } from "./contexts/InfoContext";
 
 import ResolveAuthScreen from "./screens/ResolveAuthScreen";
 
@@ -27,13 +28,15 @@ function StackNavigation() {
 export default function App() {
   return (
         <AuthProvider>
-          <NavigationContainer>
-            <Switch.Navigator>
-              <Switch.Screen name="ResolveAuth" component={ResolveAuthScreen} />
-              <Switch.Screen name="Log" component={StackNavigation} />
-              <Switch.Screen name="Main" component={MyTabs} />
-            </Switch.Navigator>
-          </NavigationContainer>
+          <InfoProvider>
+            <NavigationContainer>
+              <Switch.Navigator>
+                <Switch.Screen name="ResolveAuth" component={ResolveAuthScreen} />
+                <Switch.Screen name="Log" component={StackNavigation} />
+                <Switch.Screen name="Main" component={MyTabs} />
+              </Switch.Navigator>
+            </NavigationContainer>
+          </InfoProvider>
         </AuthProvider>
   );
 }

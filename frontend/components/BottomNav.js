@@ -33,7 +33,7 @@ export function MyTabs() {
         },
         tabBarShowLabel: false,
         tabBarActiveTintColor: "rgb(249 115 22)",
-        tabBarInactiveTintColor: "rgb(186 230 253)",
+        tabBarInactiveTintColor: "rgb(241 245 249)",
         tabBarHideOnKeyboard: true,
         tabBarStyle: {
           backgroundColor: "rgb(12 74 110)",
