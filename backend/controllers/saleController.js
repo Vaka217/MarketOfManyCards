@@ -2,6 +2,7 @@ const Sale = require('../models/Sale');
 const User = require('../models/User');
 const Card = require('../models/Card');
 const e = require('express');
+const { use } = require('../routes/saleRoutes');
 
 const createSale = async (req, res) => {
 const { price, description, quantity, cardData, condition, userId } =
@@ -106,6 +107,7 @@ const searchSale = async (req, res) => {
           user: {
             nickname: userProfile.nickname,
             profilePic: userProfile.profilePic,
+            contact: userProfile.contact,
           },
           card: {
             name: card.name,
@@ -155,6 +157,7 @@ const searchSaleById = async (req, res) => {
           user: {
             nickname: userProfile.nickname,
             profilePic: userProfile.profilePic,
+            contact: userProfile.contact,
           },
           card: {
             name: card.name,
