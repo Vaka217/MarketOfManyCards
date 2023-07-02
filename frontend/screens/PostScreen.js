@@ -24,7 +24,6 @@ import { PrivateValueStore } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import { Input } from "react-native-elements";
 import { FontAwesome } from "@expo/vector-icons";
-import DropDownPicker from "react-native-dropdown-picker";
 
 export default function PostScreen() {
   const [showModal, setShowModal] = useState(false);

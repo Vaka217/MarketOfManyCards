@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import { View, Text, Pressable, Animated } from "react-native";
 
-const MyButton = ({ type }) => {
+const MyButton = ({ type, setIsBuying, isBuying }) => {
   const scaleValue = useRef(new Animated.Value(1)).current;
 
   const handlePressIn = () => {
@@ -18,6 +18,7 @@ const MyButton = ({ type }) => {
       tension: 40,
       useNativeDriver: true,
     }).start();
+    setIsBuying(!isBuying);
   };
 
   const buttonScale = {

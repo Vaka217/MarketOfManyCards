@@ -70,7 +70,6 @@ const ProfileScreen = () => {
           `http://18.229.90.36:3000/searchusers/${state.userId}`
         );
         const profileData = response.data;
-        console.log("jfasknlsdfknñlasflñsacfasjop");
         setProfileData(profileData);
       } catch (error) {
         console.log(state.userId, "aaaaa");
@@ -152,7 +151,7 @@ const ProfileScreen = () => {
           <FlatList
             data={isPressed === "Auctions" ? auctionsData : salesData}
             renderItem={({ item }) => (
-              <Post {...item} type={isPressed} />
+              <Post {...item} type={isPressed} isUser />
   )}
             keyExtractor={(item) => item.post.id}
             showsVerticalScrollIndicator={false}

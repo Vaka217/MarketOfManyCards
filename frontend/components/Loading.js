@@ -88,21 +88,11 @@ const Loading = () => {
       width: 50,
       height: 50,
       borderRadius: 25,
-    },
-    text: {
-      marginBottom: 16,
-      fontSize: 16,
-      lineHeight: 24,
-      fontWeight: 700,
-      color: "rgb(12 74 110)",
-      justifyContent: "center",
-      alignItems: "center",
     }
   });
 
   return (
     <View style={styles.loadingContainer}>
-      <Text style={styles.text}>Loading...</Text>
       <View style={styles.hand}>
         <Animated.View style={[styles.card, styles.card1]}>
           <View style={styles.span}></View>
