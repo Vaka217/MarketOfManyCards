@@ -7,6 +7,7 @@ import {
   Modal,
   StyleSheet,
   Text,
+  ScrollView
 } from "react-native";
 import SearchBar from "./SearchBar.js";
 import { useState, useEffect } from "react";
@@ -14,6 +15,7 @@ import { SingleCardManager } from "./SingleCardManager.js";
 import useDebounce from "../hooks/useDebounce.js";
 import Loading from "./Loading.js";
 import { getCardsSearchResults } from "../api/MtgAPI.js";
+import { HomeSkeleton } from "../components/HomeSkeleton";
 
 export function CardAddMenu({
   showModal,
@@ -47,7 +49,7 @@ export function CardAddMenu({
           set: card.set.toUpperCase(),
         }));
         setCards(cardsAPI);
-        // setIsLoading(false);
+        setIsLoading(false);
       } catch (e) {
         console.log(e);
         setError(e.message);
@@ -92,13 +94,20 @@ export function CardAddMenu({
             setSearchTerm={(newTerm) => setTerm(newTerm)}
           />
         </View>
+        <View style={{ flex: 1, flexDirection: "row" }}>
+        {isLoading === false ? (
         <FlatList
           showsVerticalScrollIndicator={false}
           data={cards}
           contentContainerStyle={styles.container7}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
-        />
+        /> ) : (
+          <ScrollView showsVerticalScrollIndicator={false}>
+          <HomeSkeleton chosenColor={"rgb(30, 41, 59)"} cardHeight={110} textWidth={150} textHeight={30}/>
+          </ScrollView>
+        )}
+        </View>
         <View
           style={{
             borderRadius: 25,
