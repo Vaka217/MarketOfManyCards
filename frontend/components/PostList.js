@@ -5,10 +5,12 @@ import {
   Text,
   TouchableWithoutFeedback,
   TouchableHighlight,
+  ScrollView
 } from "react-native";
 import Post from "./Post";
+import { HomeSkeleton } from "./HomeSkeleton";
 
-const PostList = ({ sales, auctions }) => {
+const PostList = ({ sales, auctions, isLoading }) => {
   const [isAuctionsPressed, setIsAuctionsPressed] = useState(false);
 
   return (
@@ -41,7 +43,7 @@ const PostList = ({ sales, auctions }) => {
           </View>
         </TouchableWithoutFeedback>
       </View>
-      <FlatList
+      { isLoading === false ? (<FlatList
         data={isAuctionsPressed ? auctions : sales}
         renderItem={({ item }) => {
           if (isAuctionsPressed) {
@@ -53,7 +55,11 @@ const PostList = ({ sales, auctions }) => {
         keyExtractor={(item) => item.post.id}
         className="bg-sky-700"
         showsVerticalScrollIndicator={false}
-      />
+      />) : (
+        <ScrollView showsVerticalScrollIndicator={false}>
+      <HomeSkeleton chosenColor={"rgb(3, 105, 161)"} cardHeight={110} textHeight={30} textWidth={225}/>
+      </ScrollView>
+      )}
     </>
   );
 };

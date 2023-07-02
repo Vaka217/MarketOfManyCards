@@ -24,15 +24,20 @@ const CardScreen = () => {
   const maxSymbols = 4;
   const hasMoreSymbols = symbols.length > maxSymbols;
   const [expanded, setExpanded] = useState(false);
+  const [salesLoading, setSalesLoading] = useState(false);
+  const [auctionsLoading, setAuctionsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const cardSales = async () => {
       try {
+        setSalesLoading(true);
         const response = await axios.get(
           `http://18.229.90.36:3000/searchsalebycard/${card_id}` 
         );
         console.log(response.data);
         setCardSales(response.data);
+        setSalesLoading(false);
       } catch (error) {
         console.log(error);
       }
@@ -40,11 +45,13 @@ const CardScreen = () => {
 
     const cardAuctions = async () => {
       try {
+        setAuctionsLoading(true);
         const response = await axios.get(
           `http://18.229.90.36:3000/searchauctionbycard/${card_id}` 
         );
         console.log(response.data);
         setCardAuctions(response.data);
+        setAuctionsLoading(false);
       } catch (error) {
         console.log(error);
       }
@@ -57,6 +64,10 @@ const CardScreen = () => {
   const expandImage = () => {
     setExpanded(!expanded);
   };
+
+  useEffect(() => {
+    salesLoading === true || auctionsLoading === true ? setIsLoading(true) : setIsLoading(false);
+  }, [salesLoading, auctionsLoading]);
 
   return (
     <SafeAreaView className="flex-1 bg-sky-900">
@@ -144,7 +155,7 @@ const CardScreen = () => {
           </View>
         </View>
       </View>
-      <PostList sales={cardSales} auctions={cardAuctions} />
+      <PostList sales={cardSales} auctions={cardAuctions} isLoading={isLoading}/>
     </SafeAreaView>
   );
 };
