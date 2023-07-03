@@ -9,13 +9,14 @@ const Bid = require("./models/Bid");
 const Sale = require("./models/Sale");
 const Comment = require("./models/Comment");
 const Card = require("./models/Card");
-const Set = require("./models/Set");
 const Sequelize = require("sequelize");
 
 // Importar las rutas de usuarios
 const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
-const { saveCardsFromAPI } = require("./controllers/cardController");
+const auctionRoutes = require("./routes/auctionRoutes");
+const saleRoutes = require("./routes/saleRoutes");
+const cardRoutes = require("./routes/cardRoutes");
 
 const app = express();
 const port = 3000;
@@ -42,27 +43,18 @@ Comment.belongsTo(Sale, { foreignKey: "sales_id" });
 Auction.hasMany(Comment, { foreignKey: "auction_id" });
 Comment.belongsTo(Auction, { foreignKey: "auction_id" });
 
-Card.belongsTo(Set, { foreignKey: "set_id" });
-Set.hasMany(Card, { foreignKey: "set_id" });
 
 // Sincronizar modelos y luego iniciar la aplicación
 sequelize
   .sync()
   .then(async () => {
     console.log("Base de datos sincronizada correctamente.");
-
-    // Guarda las cartas desde la API de Magic
-    // try {
-    //   await saveCardsFromAPI();
-    //   console.log('Cartas guardadas desde la API de Magic: The Gathering.');
-    // } catch (error) {
-    //   console.error('Error al guardar las cartas desde la API:', error);
-    // }
-    // Configurar rutas
-    // app.use('/users', userRoutes);
+    
     app.use(userRoutes);
     app.use(authRoutes);
-    // Agrega aquí las demás rutas de tu aplicación
+    app.use(auctionRoutes);
+    app.use(saleRoutes);
+    app.use(cardRoutes);
 
     // Iniciar el servidor
     app.listen(port, () => {

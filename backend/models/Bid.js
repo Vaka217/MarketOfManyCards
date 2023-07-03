@@ -4,33 +4,27 @@ const User = require('./User');
 const Auction = require('./Auction');
 
 const Bid = sequelize.define('Bid', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  },
   auction_id: {
     type: DataTypes.INTEGER,
+    primaryKey: true,
     references: {
+      onDelete: 'CASCADE',
       model: Auction,
       key: 'id',
     },
   },
   bidder_id: {
     type: DataTypes.INTEGER,
+    primaryKey: true,
     references: {
+      onDelete: 'CASCADE',
       model: User,
       key: 'id',
     },
   },
   amount: {
-    type: DataTypes.DECIMAL,
-  },
-  created_at: {
-    type: DataTypes.DATE,
-  },
-  updated_at: {
-    type: DataTypes.DATE,
+    type: DataTypes.DECIMAL(10, 2),
+    primaryKey: true,
   },
 });
 

@@ -5,10 +5,10 @@ const User = require("../models/User");
 const router = express.Router();
 
 router.post("/signup", async (req, res) => {
-  const { email, password, nickname, contact } = req.body;
+  const { email, password, nickname, contact, profilePic } = req.body;
 
   try {
-    const user = await User.create({ email, password, nickname, contact });
+    const user = await User.create({ email, password, nickname, contact, profilePic });
 
     const token = jwt.sign({ userId: user.id }, "MY_SECRET_KEY");
     res.send({ userId: user.id, token });

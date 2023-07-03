@@ -27,15 +27,17 @@ const Sale = sequelize.define("Sale", {
   seller_id: {
     type: DataTypes.INTEGER,
     references: {
+      onDelete: 'CASCADE',
       model: User,
       key: "id",
     },
   },
   card_id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.STRING,
     references: {
       model: Card,
-      key: "id",
+      key: "card_id",
+      onDelete: 'CASCADE',
     },
   },
   status: {
@@ -46,7 +48,6 @@ const Sale = sequelize.define("Sale", {
 
 User.hasMany(Sale, { foreignKey: "seller_id" });
 Sale.belongsTo(User, { foreignKey: "seller_id" });
-Card.hasMany(Sale, { foreignKey: "card_id" });
-Sale.belongsTo(Card, { foreignKey: "card_id" });
+Sale.belongsTo(Card, { foreignKey: "card_id", onDelete: 'CASCADE' });
 
 module.exports = Sale;
