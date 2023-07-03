@@ -1,14 +1,29 @@
 import React, {useState} from 'react';
-import { Text, View, TouchableWithoutFeedback, StyleSheet } from 'react-native';
+import { View, TouchableWithoutFeedback, StyleSheet } from 'react-native';
 import { FontAwesome } from "@expo/vector-icons";
 import { Input, Button } from 'react-native-elements';
+import axios from 'axios';
 
-const FormModal = ({ isModal, toggleModal }) => {
-    const [nickname, setNickname] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [confirmation, setConfirmation] = useState("");
-    const [phone, setPhone] = useState("");
+const FormModal = ({ isModal, toggleModal, profileData }) => {
+    const [nickname, setNickname] = useState(profileData.nickname);
+    const [email, setEmail] = useState(profileData.email);
+    const [phone, setPhone] = useState(profileData.contact);
+
+    const handleUpdate = async () => {
+    try {
+      const response = await axios.put("http://18.229.90.36:3000/updateuser", {
+        nickname,
+        email,
+        contact: phone,
+        id: profileData.id,
+      });
+      console.log("User updated successfully");
+      toggleModal();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
 
     return (
         <View className="justify-center flex-1" style={{backgroundColor: "rgba(0, 0, 0, 0.5)"}}>           
@@ -34,30 +49,10 @@ const FormModal = ({ isModal, toggleModal }) => {
                     labelStyle={styles.label}
                     inputStyle={styles.label}
                 />
-                    <Input
-                        label="Phone"
-                        value={phone}
-                        onChangeText={setPhone}
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        labelStyle={styles.label}
-                        inputStyle={styles.label}
-                    />
                 <Input
-                    secureTextEntry
-                    label="Password"
-                    value={password}
-                    onChangeText={setPassword}
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    labelStyle={styles.label}
-                    inputStyle={styles.label}
-                />
-                <Input
-                    secureTextEntry
-                    label="Password Confirmation"
-                    value={confirmation}
-                    onChangeText={setConfirmation}
+                    label="Phone"
+                    value={phone}
+                    onChangeText={setPhone}
                     autoCapitalize="none"
                     autoCorrect={false}
                     labelStyle={styles.label}
@@ -74,7 +69,7 @@ const FormModal = ({ isModal, toggleModal }) => {
                         height: 45,
                         width: 200,
                     }}
-                    onPress={toggleModal}
+                    onPress={handleUpdate}
                     />
             </View>
         </View>

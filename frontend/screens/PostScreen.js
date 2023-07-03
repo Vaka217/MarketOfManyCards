@@ -12,6 +12,8 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   SafeAreaView,
+  ScrollView,
+  Alert,
 } from "react-native";
 import { CardAddMenu } from "../components/CardAddMenu.js";
 import { PostButton } from "../components/PostButton.js";
@@ -20,16 +22,27 @@ import { useState, useEffect, useContext } from "react";
 import { SearchBar } from "../components/SearchBar.js";
 import { PrivateValueStore } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
+import { Input } from "react-native-elements";
+import { FontAwesome } from "@expo/vector-icons";
 
 export default function PostScreen() {
   const [showModal, setShowModal] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [isSale, setIsSale] = useState(true);
   const [cardQuality, setCardQuality] = useState("");
   const [cardQuantity, setCardQuantity] = useState("");
-
+  const [placeholder, setPlaceholder] = useState(styles.imagePlaceholder);
+  const [open, setOpen] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const qualityArray = ["Damaged", "Heavily Played", "Moderately Played", "Lightly Played", "Near Mint"]
   const [currentCard, setCurrentCard] = useState("");
+
+  const handleValueSelect = (value) => {
+    setCardQuality(value);
+    setIsExpanded(false);
+  };
 
   const handleContentSizeChange = (event) => {
     const { contentSize } = event.nativeEvent;
@@ -48,6 +61,12 @@ export default function PostScreen() {
     setCardQuantity("");
   };
 
+  useEffect(() => {
+    currentCard === ""
+      ? setPlaceholder(styles.imagePlaceholder)
+      : setPlaceholder(styles.imageTrue);
+  }, [currentCard]);
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View
@@ -56,7 +75,7 @@ export default function PostScreen() {
           flexDirection: "row",
           justifyContent: "center",
           alignItems: "center",
-          backgroundColor: "rgb(186, 230, 253)",
+          backgroundColor: "#0269a3",
         }}
       >
         <View style={styles.container}>
@@ -64,13 +83,17 @@ export default function PostScreen() {
             onPress={() => {
               setShowModal(true);
             }}
+            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
           >
             {currentCard === "" ? (
-              <Text>Select card to post...</Text>
+              <Text style={{ color: "rgb(241, 245, 249)" }}>
+                Select card to post...
+              </Text>
             ) : (
               <Image
                 source={{ uri: JSON.parse(currentCard)["image"] }}
-                style={{ flex: 1, height: 1, width: 180 }}
+                style={{ flex: 1, width: "100%" }}
+                resizeMode="contain"
               />
             )}
           </Pressable>
@@ -80,8 +103,10 @@ export default function PostScreen() {
             flex: 1,
             justifyContent: "center",
             alignItems: "center",
-            backgroundColor: "rgb(186, 230, 253)",
-            height: "84%",
+            backgroundColor: "#0269a3",
+            width: "50%",
+            aspectRatio: 0.55,
+            justifyContent: "space-evenly",
           }}
         >
           <View
@@ -92,70 +117,70 @@ export default function PostScreen() {
               margin: "1%",
               marginRight: "5%",
               justifyContent: "center",
-              backgroundColor: "rgb(51, 65, 85)",
-              width: "100%",
+              backgroundColor: "rgb(12, 74, 110)",
+              aspectRatio: 1.5,
             }}
           >
-            <TextInput
-              placeholder="Quality..."
-              value={cardQuality}
-              onChangeText={setCardQuality}
-              multiline={false}
-              keyboardType={"default"}
-              onContentSizeChange={handleContentSizeChange}
-              maxLength={30}
-              style={{ color: "rgb(241, 245, 249)" }}
-              placeholderTextColor={"#5D5D5D"}
-            ></TextInput>
-          </View>
-          <View
-            style={{
-              flex: 1,
-              borderRadius: 15,
-              margin: "1%",
-              marginRight: "5%",
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: "rgb(51, 65, 85)",
-              width: "100%",
-            }}
-          >
-            <TextInput
-              placeholder="Quantity..."
-              value={cardQuantity}
-              onChangeText={setCardQuantity}
-              multiline={false}
-              keyboardType={"numeric"}
-              onContentSizeChange={handleContentSizeChange}
-              maxLength={30}
-              style={{ color: "rgb(241, 245, 249)" }}
-              placeholderTextColor={"#5D5D5D"}
-            ></TextInput>
-          </View>
-          <View
-            style={{
-              flex: 1,
-              borderRadius: 15,
-              margin: "1%",
-              marginRight: "5%",
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: "rgb(51, 65, 85)",
-              width: "100%",
-            }}
-          >
-            <TextInput
-              placeholder="Price..."
+            <Input
+              label="Price"
               value={price}
               onChangeText={setPrice}
-              multiline={false}
-              keyboardType={"numeric"}
-              onContentSizeChange={handleContentSizeChange}
-              maxLength={7}
-              style={{ color: "rgb(241, 245, 249)" }}
-              placeholderTextColor={"#5D5D5D"}
-            ></TextInput>
+              autoCapitalize="none"
+              autoCorrect={false}
+              labelStyle={styles.label}
+              inputStyle={styles.input}
+              keyboardType={"decimal-pad"}
+              containerStyle={{
+                alignItems: "center",
+                justifyContent: "center",
+                marginTop: "10%",
+              }}
+            />
           </View>
+          <View
+            style={{
+              flex: 1,
+              borderRadius: 15,
+              margin: "1%",
+              marginRight: "5%",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "rgb(12, 74, 110)",
+              aspectRatio: 1.5,
+            }}
+          >
+            <Input
+              label="Quantity"
+              value={cardQuantity}
+              onChangeText={setCardQuantity}
+              autoCapitalize="none"
+              autoCorrect={false}
+              labelStyle={styles.label}
+              inputStyle={styles.input}
+              keyboardType={"decimal-pad"}
+              containerStyle={{
+                alignItems: "center",
+                justifyContent: "center",
+                marginTop: "10%",
+              }}
+            />
+          </View>
+          <Pressable onPress={() => {setIsExpanded(true)}} style={{
+                flex: 1,
+                borderRadius: 15,
+                margin: "1%",
+                marginRight: "5%",
+                alignItems: "center",
+                backgroundColor: "rgb(12, 74, 110)",
+                aspectRatio: 1.5,
+              }}>
+                <Text style={{ color: "rgb(241, 245, 249)", fontSize: 16, fontWeight: "bold", marginTop: "8%" }}>
+                  Quality
+                </Text>
+              <Text style={{ color: "rgb(241, 245, 249)", fontSize: 15, fontWeight: "bold", fontStyle: "italic", textAlign: "center", marginTop: "8%"}}>
+                {cardQuality}
+              </Text>
+          </Pressable>
         </View>
         <CardAddMenu
           showModal={showModal}
@@ -165,12 +190,12 @@ export default function PostScreen() {
           setCurrentCard={setCurrentCard}
         />
       </View>
-      <View style={{ flex: 1, backgroundColor: "rgb(186, 230, 253)" }}>
+      <View style={{ flex: 1, backgroundColor: "#0269a3" }}>
         <View
           style={{
             flex: 2,
             flexDirection: "row",
-            backgroundColor: "rgb(186, 230, 253)",
+            backgroundColor: "#0269a3",
           }}
         >
           <View
@@ -180,12 +205,16 @@ export default function PostScreen() {
               margin: 10,
               alignItems: "center",
               justifyContent: "center",
-              backgroundColor: "rgb(51, 65, 85)",
+              backgroundColor: "rgb(12, 74, 110)",
             }}
           >
             <TextInput
               placeholder="Description..."
-              style={{ margin: 5, color: "rgb(241, 245, 249)" }}
+              style={{
+                margin: 5,
+                color: "rgb(241, 245, 249)",
+                fontStyle: "italic",
+              }}
               value={description}
               onChangeText={setDescription}
               multiline={true}
@@ -193,17 +222,19 @@ export default function PostScreen() {
               maxLength={150}
               rows={5}
               inputMode={"url"}
-              placeholderTextColor={"#5D5D5D"}
+              placeholderTextColor={"rgb(241 245 249)"}
             ></TextInput>
           </View>
         </View>
-        <View style={{ flex: 1, backgroundColor: "rgb(186, 230, 253)" }}>
-          <SaleAuctionSlider isSale={isSale} setIsSale={setIsSale} />
+        <View style={{ flex: 1, backgroundColor: "#0269a3" }}>
+          <View style={{ flex: 1 }}>
+            <SaleAuctionSlider isSale={isSale} setIsSale={setIsSale} />
+          </View>
         </View>
         <View
           style={{
             flex: 1,
-            backgroundColor: "rgb(186, 230, 253)",
+            backgroundColor: "#0269a3",
             justifyContent: "center",
             alignItems: "center",
           }}
@@ -219,20 +250,41 @@ export default function PostScreen() {
           />
         </View>
       </View>
+      <Modal transparent={true} visible={isExpanded} className="flex-1" >
+        <View className="rounded-b-lg flex-1 justify-center" style={{backgroundColor: "rgba(0, 0, 0, 0.5)"}}>
+          <View className="bg-sky-900 p-2 m-8 rounded-lg items-center flex-row max-h-96">
+            <FlatList
+              data={qualityArray}
+              renderItem={({ item }) => {
+              return (
+              <Pressable onPress={() => handleValueSelect(item)}>
+                <View className="border-b border-slate-100 h-12 items-center justify-center">
+                  <Text className="text-slate-100 font-bold text-2xl">
+                    {item}
+                  </Text>
+                </View>
+              </Pressable>
+              );
+              }}
+              keyExtractor={(item) => item}
+              showsVerticalScrollIndicator={false}
+            />
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: "center",
-    justifyContent: "space-evenly",
     marginLeft: "2%",
     marginRight: "2%",
-    height: "84%",
-    borderRadius: 20,
-    backgroundColor: "rgb(51, 65, 85)",
-    width: "60%",
+    width: "50%",
+    borderRadius: 12,
+    backgroundColor: "rgb(12, 74, 110)",
+    aspectRatio: 2.5 / 3.5,
+    overflow: "hidden",
   },
   container2: {
     flexDirection: "row",
@@ -258,5 +310,28 @@ const styles = StyleSheet.create({
   container5: {
     alignItems: "center",
     justifyContent: "center",
+  },
+  imagePlaceholder: {
+    borderColor: "rgb(241, 245, 249)",
+    borderStyle: "dashed",
+    width: "90%",
+    height: "90%",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 20,
+    borderWidth: 0,
+  },
+  imageTrue: {
+    width: "100%",
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  label: {
+    color: "rgb(241, 245, 249)",
+  },
+  input: {
+    color: "rgb(241, 245, 249)",
+    textAlign: "center",
   },
 });

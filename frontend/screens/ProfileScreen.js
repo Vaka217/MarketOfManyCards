@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   SafeAreaView,
   View,
@@ -10,74 +10,95 @@ import {
   Pressable,
   TouchableWithoutFeedback,
   FlatList,
+  ActivityIndicator
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import PostList from "../components/PostList";
-import Sale from "../components/Sale";
-import Auction from "../components/Auction";
-import Confirmation from "../components/Confirmation";
+import Post from "../components/Post";
 import FormModal from "../components/FormModal";
 import { Modal } from "react-native";
-import { Button } from "react-native-elements";
-import { Context as AuthContext } from '../contexts/AuthContext';
+import { Context as AuthContext } from "../contexts/AuthContext";
 import { useNavigation } from "@react-navigation/native";
+import { Avatar } from "react-native-elements";
+import axios from "axios";
+import { InfoContext } from "../contexts/InfoContext";
+import Bid from "../components/Bid";
+import { HomeSkeleton } from "../components/HomeSkeleton";
 
-options = ["Sales", "Auctions", "Bids", "Transactions", "Confirmations"];
-
-const posts = [
-  {
-    id: "1",
-    pic: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-    name: "Pedro",
-    condition: "Near-Mind",
-    quantity: 3,
-    price: "20",
-    card: "Llanowar Elves",
-  },
-  {
-    id: "2",
-    pic: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-    name: "Juana",
-    condition: "Near-Mind",
-    quantity: 4,
-    price: "200",
-    card: "Lightning Bolt",
-  },
-  {
-    id: "3",
-    pic: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-    name: "Luis",
-    condition: "Near-Mind",
-    quantity: 50,
-    price: "7",
-    card: "Eidolon of Countless Battles",
-  },
-  {
-    id: "4",
-    pic: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-    name: "Pedro",
-    condition: "Near-Mind",
-    quantity: 3,
-    price: "20",
-    card: "Llanowar Elves",
-  },
-  {
-    id: "5",
-    pic: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-    name: "Juana",
-    condition: "Near-Mind",
-    quantity: 4,
-    price: "200",
-    card: "Lightning Bolt",
-  },
-];
+options = ["Sales", "Auctions", "Bids"];
 
 const ProfileScreen = () => {
   const [isPressed, setIsPressed] = useState("Sales");
   const [viewWidth, setViewWidth] = useState(0);
   const [isModal, setIsModal] = useState(false);
-  const { state, signout, clearErrorMessage } = useContext(AuthContext);
+  const { state, signout } = useContext(AuthContext);
+  const [profileData, setProfileData] = useState();
+  const {salesUserData, auctionsUserData, setSalesUserData, setAuctionsUserData} = useContext(InfoContext);
+  const [bidsData, setBidsData] = useState(null);
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const fetchSalesData = async () => {
+      try {
+        const response = await axios.get(
+          `http://18.229.90.36:3000/searchsale/${state.userId}`
+        );
+        const salesData = response.data;
+        setSalesUserData(salesData);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    const fetchAuctionsData = async () => {
+      try {
+        const response = await axios.get(
+          `http://18.229.90.36:3000/searchauction/${state.userId}`
+        );
+        const auctionsData = response.data;
+        setAuctionsUserData(auctionsData);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    const fetchProfileData = async () => {
+      try {
+        const response = await axios.get(
+          `http://18.229.90.36:3000/searchusers/${state.userId}`
+        );
+        const profileData = response.data;
+        setProfileData(profileData);
+        console.log(profileData);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    const fetchBidsData = async () => {
+      try {
+        const response = await axios.get(
+          `http://18.229.90.36:3000/getuserbids/${state.userId}`
+        );
+        const bidsData = response.data;
+        setBidsData(bidsData);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchProfileData();
+    fetchSalesData();
+    fetchAuctionsData();
+    fetchBidsData();
+  }, []);
+
+  if (!profileData) {
+    return (
+    <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "rgb(12, 74, 110)" }}>
+      <ActivityIndicator size={"large"} color={"rgb(241, 245, 249)"} style={{ transform: [{ scaleX: 2 }, { scaleY: 2 }] }} />
+    </View>
+    )
+  }
 
   const handleLayout = (event) => {
     const { width } = event.nativeEvent.layout;
@@ -90,59 +111,34 @@ const ProfileScreen = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-sky-900">
-      <Modal
-        visible={isModal}
-        transparent={true}
-        onRequestClose={toggleModal}
-      >
-        <FormModal isModal={isModal} toggleModal={toggleModal} />
+      <Modal visible={isModal} transparent={true} onRequestClose={toggleModal}>
+        <FormModal isModal={isModal} toggleModal={toggleModal} profileData={profileData} />
       </Modal>
-      <View className="h-1/3 items-center" style={styles.container}>
-        <Text className="text-slate-100 text-base font-bold mt-1">
-          XxJuanCarlos1972xX
+      <View className="items-center pb-4" style={styles.container}>
+        <Text className="text-slate-100 text-base font-bold my-3">
+          {profileData.nickname}
         </Text>
-        <Image
+        <Pressable
+          onPress={() => {
+            signout({ navigation });
+          }}
+          className="absolute right-1 m-2"
+        >
+          <FontAwesome name="sign-out" size={36} color="white" />
+        </Pressable>
+        <Pressable onPress={toggleModal} className="absolute left-1 m-2">
+          <FontAwesome name="edit" size={36} color="white" />
+        </Pressable>
+        <Avatar
+          rounded
           source={{
-            uri: "https://cdn.discordapp.com/attachments/732360655658680452/1118248308213821491/ghj.png",
+            uri: profileData.profilePic,
           }}
-          className="w-28 h-28 rounded-full self-center mt-1"
-        />     
-        <Button
-          title="Edit"
-          loading={false}
-          loadingProps={{ size: "small", color: "white" }}
-          buttonStyle={{
-            backgroundColor: "rgb(249 115 22)",
-            borderRadius: 5,
-          }}
-          titleStyle={{ fontWeight: "bold", fontSize: 16 }}
-          containerStyle={{
-            height: 45,
-            width: 200,
-            justifyContent: "center",
-            marginTop: 4
-          }}
-          onPress={toggleModal}
-        />
-        <Button
-          title="Logout"
-          loading={false}
-          loadingProps={{ size: "small", color: "white" }}
-          buttonStyle={{
-            backgroundColor: "rgb(249 115 22)",
-            borderRadius: 5,
-          }}
-          titleStyle={{ fontWeight: "bold", fontSize: 16 }}
-          containerStyle={{
-            height: 45,
-            width: 200,
-            justifyContent: "center"
-          }}
-          onPress={() => {signout({ navigation })}}
+          size="large"
         />
       </View>
       <View className="bg-sky-700 flex-1">
-        <View className="overflow-hidden flex-1" onLayout={handleLayout}>
+        <View className="overflow-hidden" onLayout={handleLayout}>
           <FlatList
             data={options}
             renderItem={({ item }) => {
@@ -169,23 +165,27 @@ const ProfileScreen = () => {
             keyExtractor={(item) => item}
             horizontal={true}
             showsHorizontalScrollIndicator={false}
-          />
+          />     
+        </View>
+        {isPressed != "Bids" ? (
+          !salesUserData || !auctionsUserData ? ( <HomeSkeleton chosenColor={"rgb(3, 105, 161)"} cardHeight={110} textHeight={30} textWidth={225}/> ) : (
           <FlatList
-            data={posts}
-            renderItem={({ item }) => {
-              if (isPressed === "Auctions") {
-                return <Auction {...item} />;
-              } else if (isPressed === "Sales") {
-                return <Sale {...item} />;
-              } else {
-                return <Confirmation {...item} />;
-              }
-            }}
-            keyExtractor={(item) => item.id}
-            className="bg-sky-700"
+            data={isPressed === "Auctions" ? auctionsUserData : salesUserData}
+            renderItem={({ item }) => (
+              <Post {...item} type={isPressed} isUser />
+            )}
+            keyExtractor={(item) => item.post.id}
             showsVerticalScrollIndicator={false}
           />
-        </View>
+        )) : (
+          !bidsData ? ( <HomeSkeleton chosenColor={"rgb(3, 105, 161)"} cardHeight={110} textHeight={30} textWidth={225}/> ) : (
+          <FlatList data={bidsData} renderItem={({ item }) => (
+              <Bid {...item} />
+            )}
+            keyExtractor={(item) => item.post.id}
+            showsVerticalScrollIndicator={false}
+          />
+        ))}
       </View>
     </SafeAreaView>
   );

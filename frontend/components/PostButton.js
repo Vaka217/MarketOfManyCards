@@ -1,5 +1,5 @@
 //import { useEffect, useState } from '@react-navigation/native';
-import { Pressable, Text, View, StyleSheet } from "react-native";
+import { Pressable, Text, View, StyleSheet, Modal, Animated, Alert } from "react-native";
 import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { Context as AuthContext } from "../contexts/AuthContext";
@@ -15,8 +15,33 @@ export function PostButton({
 }) {
   const { state } = useContext(AuthContext);
   const [postCheck, setPostCheck] = useState(false);
+  const showWarning = (alertTitle, alertMessage) => {
+    Alert.alert(
+      alertTitle,
+      alertMessage,
+      [
+        {
+          text: 'OK',
+        },
+      ],
+      { cancelable: false }
+    );
+  };
   const generatePost = () => {
-    let postObject = {
+    if (price === "" || description === "" || cardQuantity === "" || cardQuality === "" || post === "") {
+      showWarning('Cannot create post.', 'Please make sure all the required fields are filled out.');
+      return
+    }
+    if (cardQuantity.includes("-") === true || cardQuantity.includes(".") === true) {
+      showWarning('Cannot create post.', 'Invalid quantity.');
+      return
+    }
+    let numberOfPeriods = price.split('.').length - 1;
+    if (numberOfPeriods > 1 || price.includes("-") === true || price[0] === '.' || price.endsWith('.') === true) {
+      showWarning('Cannot create post.', 'Invalid price.');
+      return
+    }
+    let saleObject = {
       price: price,
       description: description,
       quantity: parseInt(cardQuantity),
@@ -24,6 +49,19 @@ export function PostButton({
       cardData: post,
       userId: state.userId,
     };
+
+    let auctionObject = {
+      actual_bid: price,
+      description: description,
+      quantity: parseInt(cardQuantity),
+      condition: cardQuality,
+      cardData: post,
+      userId: state.userId,
+    };
+    let routeToPostTo = "";
+    postType === true
+      ? (routeToPostTo = "http://18.229.90.36:3000/createsales")
+      : (routeToPostTo = "http://18.229.90.36:3000/createauction");
     console.log("Post content: ");
     console.log(post);
     console.log("Card Quantity: ");
@@ -39,33 +77,31 @@ export function PostButton({
     console.log("Card quality: ");
     console.log(cardQuality);
     setPostCheck(!postCheck);
-    createPost(postObject);
+    postType === true
+      ? createPost(saleObject, routeToPostTo)
+      : createPost(auctionObject, routeToPostTo);
+    showWarning('Posted!', 'Your post has been succesfully created.');
   };
-  const createPost = async ({
-    price,
-    description,
-    quantity,
-    condition,
-    cardData,
-    userId,
-  }) => {
+  const createPost = async (
+    { price, description, quantity, condition, cardData, userId, actual_bid },
+    routeToPostTo
+  ) => {
     try {
-      const response = await axios.post(
-        "http://18.229.90.36:3000/createsales",
-        {
-          price,
-          description,
-          quantity,
-          condition,
-          cardData,
-          userId,
-        }
-      );
+      const response = await axios.post(routeToPostTo, {
+        price,
+        description,
+        quantity,
+        condition,
+        cardData,
+        userId,
+        actual_bid,
+      });
       const newPost = response.data;
-      console.log("Funciona lol: ", newPost);
+      console.log("Success: ", newPost);
       return newPost;
     } catch (error) {
-      console.error("Error lol: ", error.response.data);
+      console.log(postType);
+      console.error("Error: ", error.response.data);
     }
   };
 
@@ -79,7 +115,7 @@ export function PostButton({
         style={styles.button}
         className="bg-orange-500"
       >
-        <Text style={styles.text} className="text-slate-100 font-mono">
+        <Text style={styles.text} className="text-slate-100 font-bold text-lg">
           Post
         </Text>
       </Pressable>
@@ -88,13 +124,9 @@ export function PostButton({
 }
 
 const styles = StyleSheet.create({
-  text: {
-    fontFamily: "monospace",
-    color: "#DEDEDE",
-  },
   button: {
-    width: 80,
-    height: 40,
+    width: 120,
+    height: 50,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 10,

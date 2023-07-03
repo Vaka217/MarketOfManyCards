@@ -1,15 +1,15 @@
 {
   "expo": {
-    "name": "test-cardmarket-2",
-    "slug": "test-cardmarket-2",
+    "name": "Market of Many Cards",
+    "slug": "Market of Many Cards",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/BlueLogo.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/splashMMC.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#0C4A6E"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -21,10 +21,11 @@
     "android": {
       "userInterfaceStyle": "light",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/BlueLogo.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.vakon.testcardmarket2"
+      "package": "com.vakon.testcardmarket2",
+      "softwareKeyboardLayoutMode": "pan"
     },
     "extra": {
       "eas": {

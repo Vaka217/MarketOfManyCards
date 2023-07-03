@@ -1,115 +1,21 @@
-import React, { useEffect, useState, useContext } from "react";
-
+import React, { useState, useContext } from "react";
 import {
   FlatList,
   View,
   Text,
   TouchableWithoutFeedback,
-  TouchableHighlight,
+  ScrollView
 } from "react-native";
-import Sale from "./Sale";
-import Auction from "./Auction";
-import axios from "axios";
+import Post from "./Post";
+import { InfoContext } from "../contexts/InfoContext";
+import { HomeSkeleton } from "./HomeSkeleton";
 
- const posts = async () => {
-   try {
-     const response = await axios.get('http://18.229.90.36:3000/searchsales');
-     const salesData = response.data;
-
-     return salesData
-   } catch (error) {
-     console.log(error);
-   }
- }
-
-/*const posteados = [
-  {
-    id: "1",
-    pic: "https://cards.scryfall.io/large/front/b/d/bd8fa327-dd41-4737-8f19-2cf5eb1f7cdd.jpg?1614638838",
-    name: "Pedro",
-    condition: "Near-Mind",
-    quantity: 3,
-    price: "20",
-    card: "Llanowar Elves",
-    profile:
-      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut.",
-  },
-  {
-    id: "2",
-    pic: "https://cards.scryfall.io/large/front/b/d/bd8fa327-dd41-4737-8f19-2cf5eb1f7cdd.jpg?1614638838",
-    name: "Juana",
-    condition: "Near-Mind",
-    profile:
-      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-    quantity: 4,
-    price: "200",
-    card: "Lightning Bolt",
-  },
-  {
-    id: "3",
-    pic: "https://cards.scryfall.io/large/front/b/d/bd8fa327-dd41-4737-8f19-2cf5eb1f7cdd.jpg?1614638838",
-    name: "Luis",
-    condition: "Near-Mind",
-    profile:
-      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-    quantity: 50,
-    price: "7",
-    card: "Eidolon of Countless Battles",
-  },
-  {
-    id: "4",
-    pic: "https://cards.scryfall.io/large/front/b/d/bd8fa327-dd41-4737-8f19-2cf5eb1f7cdd.jpg?1614638838",
-    name: "Pedro",
-    condition: "Near-Mind",
-    profile:
-      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-    quantity: 3,
-    price: "20",
-    card: "Llanowar Elves",
-  },
-  {
-    id: "5",
-    pic: "https://cards.scryfall.io/large/front/b/d/bd8fa327-dd41-4737-8f19-2cf5eb1f7cdd.jpg?1614638838",
-    name: "Juana",
-    condition: "Near-Mind",
-    quantity: 4,
-    price: "200",
-    card: "Lightning Bolt",
-    profile:
-      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-  },
-  {
-    id: "6",
-    pic: "https://cards.scryfall.io/large/front/b/d/bd8fa327-dd41-4737-8f19-2cf5eb1f7cdd.jpg?1614638838",
-    name: "Luis",
-    condition: "Near-Mind",
-    quantity: 50,
-    price: "7",
-    card: "Eidolon of Countless Battles",
-    profile:
-      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut.",
-  },
-];*/
-
-const PostList = () => {
+const PostList = ({ isLoading, card }) => {
   const [isAuctionsPressed, setIsAuctionsPressed] = useState(false);
-  const [posteados, setPosteados] = useState([]);
+  const { salesData, auctionsData, salesCardData, auctionsCardData } = useContext(InfoContext);
+  const sales = card ? salesCardData : salesData;
+  const auctions = card ? auctionsCardData : auctionsData;
 
-  useEffect(() => {
-      const fetchData = async () => {
-      const data = await posts();
-
-      setPosteados(data);
-    };
-
-    fetchData();
-  }, []);
-
-  console.log(posteados);
   return (
     <>
       <View className="flex-row">
@@ -140,19 +46,25 @@ const PostList = () => {
           </View>
         </TouchableWithoutFeedback>
       </View>
-      <FlatList
-        data={posteados}
-        renderItem={({ item }) => {
-          if (isAuctionsPressed) {
-            return <Auction {...item} />;
-          } else {
-            return <Sale {...item} />;
-          }
-        }}
-        keyExtractor={(item) => item.id}
-        className="bg-sky-700"
-        showsVerticalScrollIndicator={false}
-      />
+      { isLoading === false ? (
+        <FlatList
+          data={isAuctionsPressed ? auctions : sales}
+          renderItem={({ item }) => {
+            if (isAuctionsPressed) {
+              return <Post {...item} type="Auctions" />;
+            } else {
+              return <Post {...item} type="Sales" />;
+            }
+          }}
+          keyExtractor={(item) => item.post.id}
+          className="bg-sky-700"
+          showsVerticalScrollIndicator={false}
+        />
+      ) : (
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <HomeSkeleton chosenColor={"rgb(3, 105, 161)"} cardHeight={110} textHeight={30} textWidth={225}/>
+        </ScrollView>
+      )}
     </>
   );
 };
