@@ -115,7 +115,7 @@ export function PostButton({
         style={styles.button}
         className="bg-orange-500"
       >
-        <Text style={styles.text} className="text-slate-100 font-mono">
+        <Text style={styles.text} className="text-slate-100 font-bold text-lg">
           Post
         </Text>
       </Pressable>
@@ -124,13 +124,9 @@ export function PostButton({
 }
 
 const styles = StyleSheet.create({
-  text: {
-    fontFamily: "monospace",
-    color: "#DEDEDE",
-  },
   button: {
-    width: 80,
-    height: 40,
+    width: 120,
+    height: 50,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 10,

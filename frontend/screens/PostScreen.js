@@ -165,27 +165,22 @@ export default function PostScreen() {
               }}
             />
           </View>
-          <View
-            style={{
-              flex: 1,
-              borderRadius: 15,
-              margin: "1%",
-              marginRight: "5%",
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: "rgb(12, 74, 110)",
-              aspectRatio: 1.5,
-            }}
-          >
-            <Pressable onPress={() => {setIsExpanded(true)}}>
-              <Text style={{ color: "rgb(241, 245, 249)", fontSize: 16, fontWeight: "bold", marginBottom: "25%" }}>
-                Quality
+          <Pressable onPress={() => {setIsExpanded(true)}} style={{
+                flex: 1,
+                borderRadius: 15,
+                margin: "1%",
+                marginRight: "5%",
+                alignItems: "center",
+                backgroundColor: "rgb(12, 74, 110)",
+                aspectRatio: 1.5,
+              }}>
+                <Text style={{ color: "rgb(241, 245, 249)", fontSize: 16, fontWeight: "bold", marginTop: "8%" }}>
+                  Quality
+                </Text>
+              <Text style={{ color: "rgb(241, 245, 249)", fontSize: 15, fontWeight: "bold", fontStyle: "italic", textAlign: "center", marginTop: "8%"}}>
+                {cardQuality}
               </Text>
-            </Pressable>
-            <Text style={{ color: "rgb(241, 245, 249)", fontSize: 15, fontWeight: "bold", fontStyle: "italic"}}>
-              {cardQuality}
-            </Text>
-          </View>
+          </Pressable>
         </View>
         <CardAddMenu
           showModal={showModal}

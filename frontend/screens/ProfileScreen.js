@@ -95,7 +95,7 @@ const ProfileScreen = () => {
   if (!profileData) {
     return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "rgb(12, 74, 110)" }}>
-      <ActivityIndicator size={"large"} color={"rgb(241, 245, 249)"}/>
+      <ActivityIndicator size={"large"} color={"rgb(241, 245, 249)"} style={{ transform: [{ scaleX: 2 }, { scaleY: 2 }] }} />
     </View>
     )
   }

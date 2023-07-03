@@ -14,7 +14,7 @@ export function SaleAuctionSlider( {isSale, setIsSale} ) {
         <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
             <Pressable style={styles.sliderBackground} onPress={() => {setIsSale(!isSale)}}>
                 <View style={styleType}>
-                    <Text className="text-slate-100">
+                    <Text className="text-slate-100 text-lg font-bold">
                         {postType}
                     </Text>
                 </View>

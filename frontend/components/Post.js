@@ -127,7 +127,7 @@ const Post = ({ post, card, user, type, isUser }) => {
               </View>
               <View className="flex-row flex-1">
                 <View className="rounded-lg bg-sky-900 ml-1 mb-0.5 flex-1 justify-center items-center px-1">
-                  <Text className="text-lg font-bold text-slate-100">
+                  <Text className="text-lg font-bold text-slate-100 text-center">
                     {post.condition}
                   </Text>
                 </View>
@@ -254,7 +254,7 @@ const Post = ({ post, card, user, type, isUser }) => {
                           <Text className="text-xl font-bold text-sky-900 text-center flex-1 bg-slate-100 h-full p-1">
                             {selectedValue}
                           </Text>
-                          <Pressable onPress={() => setSelectedValue(selectedValue === 0 ? 0 : selectedValue - 1)} style={{flex: 1}}>
+                          <Pressable onPress={() => setSelectedValue(selectedValue === 1 ? 1 : selectedValue - 1)} style={{flex: 1}}>
                             <FontAwesome name="minus" size={24} color="rgb(241 245 249)" style={{flex: 1, textAlign: "center", verticalAlign:"middle"}} />
                           </Pressable>
                         </View>
@@ -415,7 +415,7 @@ const Post = ({ post, card, user, type, isUser }) => {
                 <Avatar
                   rounded
                   source={{
-                    uri: "https://cdn.discordapp.com/attachments/732360655658680452/1118248308213821491/ghj.png",
+                    uri: user.profilePic,
                   }}
                   size="large"
                   containerStyle={{ marginBottom: 16, marginTop: 10 }}
