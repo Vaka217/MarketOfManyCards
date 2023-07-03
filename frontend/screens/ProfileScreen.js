@@ -93,7 +93,11 @@ const ProfileScreen = () => {
   }, []);
 
   if (!profileData) {
-    return <HomeSkeleton chosenColor={"rgb(3, 105, 161)"} cardHeight={110} textHeight={30} textWidth={225}/>; // Render null or a loading indicator while data is being fetched
+    return (
+    <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "rgb(12, 74, 110)" }}>
+      <ActivityIndicator size={"large"} color={"rgb(241, 245, 249)"}/>
+    </View>
+    )
   }
 
   const handleLayout = (event) => {
