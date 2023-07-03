@@ -10,6 +10,7 @@ import {
   Pressable,
   TouchableWithoutFeedback,
   FlatList,
+  ActivityIndicator
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import Post from "../components/Post";
@@ -21,6 +22,7 @@ import { Avatar } from "react-native-elements";
 import axios from "axios";
 import { InfoContext } from "../contexts/InfoContext";
 import Bid from "../components/Bid";
+import { HomeSkeleton } from "../components/HomeSkeleton";
 
 options = ["Sales", "Auctions", "Bids"];
 
@@ -91,7 +93,7 @@ const ProfileScreen = () => {
   }, []);
 
   if (!profileData) {
-    return null; // Render null or a loading indicator while data is being fetched
+    return <HomeSkeleton chosenColor={"rgb(3, 105, 161)"} cardHeight={110} textHeight={30} textWidth={225}/>; // Render null or a loading indicator while data is being fetched
   }
 
   const handleLayout = (event) => {
@@ -162,6 +164,7 @@ const ProfileScreen = () => {
           />     
         </View>
         {isPressed != "Bids" ? (
+          !salesUserData || !auctionsUserData ? ( <HomeSkeleton chosenColor={"rgb(3, 105, 161)"} cardHeight={110} textHeight={30} textWidth={225}/> ) : (
           <FlatList
             data={isPressed === "Auctions" ? auctionsUserData : salesUserData}
             renderItem={({ item }) => (
@@ -170,14 +173,15 @@ const ProfileScreen = () => {
             keyExtractor={(item) => item.post.id}
             showsVerticalScrollIndicator={false}
           />
-        ) : (
+        )) : (
+          !bidsData ? ( <HomeSkeleton chosenColor={"rgb(3, 105, 161)"} cardHeight={110} textHeight={30} textWidth={225}/> ) : (
           <FlatList data={bidsData} renderItem={({ item }) => (
               <Bid {...item} />
             )}
             keyExtractor={(item) => item.post.id}
             showsVerticalScrollIndicator={false}
           />
-        )}
+        ))}
       </View>
     </SafeAreaView>
   );

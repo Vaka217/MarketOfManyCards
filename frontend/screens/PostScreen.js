@@ -35,17 +35,14 @@ export default function PostScreen() {
   const [cardQuantity, setCardQuantity] = useState("");
   const [placeholder, setPlaceholder] = useState(styles.imagePlaceholder);
   const [open, setOpen] = useState(false);
-  const [items, setItems] = useState([
-    { label: "Mint", value: "mint" },
-    { label: "Near Mint", value: "near mint" },
-    { label: "Excellent", value: "excellent" },
-    { label: "Good", value: "good" },
-    { label: "Light Played", value: "light played" },
-    { label: "Played", value: "played" },
-    { label: "Poor", value: "poor" },
-  ]);
-
+  const [isExpanded, setIsExpanded] = useState(false);
+  const qualityArray = ["Damaged", "Heavily Played", "Moderately Played", "Lightly Played", "Near Mint"]
   const [currentCard, setCurrentCard] = useState("");
+
+  const handleValueSelect = (value) => {
+    setCardQuality(value);
+    setIsExpanded(false);
+  };
 
   const handleContentSizeChange = (event) => {
     const { contentSize } = event.nativeEvent;
@@ -180,20 +177,14 @@ export default function PostScreen() {
               aspectRatio: 1.5,
             }}
           >
-            <Input
-              label="Quality"
-              value={cardQuality}
-              onChangeText={setCardQuality}
-              autoCapitalize="none"
-              autoCorrect={false}
-              labelStyle={styles.label}
-              inputStyle={styles.input}
-              keyboardType={"default"}
-              containerStyle={{
-                alignItems: "center",
-                marginTop: "10%",
-              }}
-            />
+            <Pressable onPress={() => {setIsExpanded(true)}}>
+              <Text style={{ color: "rgb(241, 245, 249)", fontSize: 16, fontWeight: "bold", marginBottom: "25%" }}>
+                Quality
+              </Text>
+            </Pressable>
+            <Text style={{ color: "rgb(241, 245, 249)", fontSize: 15, fontWeight: "bold", fontStyle: "italic"}}>
+              {cardQuality}
+            </Text>
           </View>
         </View>
         <CardAddMenu
@@ -264,6 +255,28 @@ export default function PostScreen() {
           />
         </View>
       </View>
+      <Modal transparent={true} visible={isExpanded} className="flex-1" >
+        <View className="rounded-b-lg flex-1 justify-center" style={{backgroundColor: "rgba(0, 0, 0, 0.5)"}}>
+          <View className="bg-sky-900 p-2 m-8 rounded-lg items-center flex-row max-h-96">
+            <FlatList
+              data={qualityArray}
+              renderItem={({ item }) => {
+              return (
+              <Pressable onPress={() => handleValueSelect(item)}>
+                <View className="border-b border-slate-100 h-12 items-center justify-center">
+                  <Text className="text-slate-100 font-bold text-2xl">
+                    {item}
+                  </Text>
+                </View>
+              </Pressable>
+              );
+              }}
+              keyExtractor={(item) => item}
+              showsVerticalScrollIndicator={false}
+            />
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }

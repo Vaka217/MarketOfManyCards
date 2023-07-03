@@ -1,8 +1,8 @@
-import { Pressable, Text, View, StyleSheet, Modal, Animated } from "react-native";
+//import { useEffect, useState } from '@react-navigation/native';
+import { Pressable, Text, View, StyleSheet, Modal, Animated, Alert } from "react-native";
 import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { Context as AuthContext } from "../contexts/AuthContext";
-import { InfoContext } from "../contexts/InfoContext";
 
 export function PostButton({
   post,
@@ -14,11 +14,31 @@ export function PostButton({
   cardQuantity,
 }) {
   const { state } = useContext(AuthContext);
-  const { setSalesUserData, setAuctionsUserData, salesUserData, auctionUserData } = useContext(InfoContext);
   const [postCheck, setPostCheck] = useState(false);
+  const showWarning = (alertTitle, alertMessage) => {
+    Alert.alert(
+      alertTitle,
+      alertMessage,
+      [
+        {
+          text: 'OK',
+        },
+      ],
+      { cancelable: false }
+    );
+  };
   const generatePost = () => {
     if (price === "" || description === "" || cardQuantity === "" || cardQuality === "" || post === "") {
-      console.log("Unable to create post, missing fields");
+      showWarning('Cannot create post.', 'Please make sure all the required fields are filled out.');
+      return
+    }
+    if (cardQuantity.includes("-") === true || cardQuantity.includes(".") === true) {
+      showWarning('Cannot create post.', 'Invalid quantity.');
+      return
+    }
+    let numberOfPeriods = price.split('.').length - 1;
+    if (numberOfPeriods > 1 || price.includes("-") === true || price[0] === '.' || price.endsWith('.') === true) {
+      showWarning('Cannot create post.', 'Invalid price.');
       return
     }
     let saleObject = {
@@ -60,6 +80,7 @@ export function PostButton({
     postType === true
       ? createPost(saleObject, routeToPostTo)
       : createPost(auctionObject, routeToPostTo);
+    showWarning('Posted!', 'Your post has been succesfully created.');
   };
   const createPost = async (
     { price, description, quantity, condition, cardData, userId, actual_bid },
@@ -76,12 +97,11 @@ export function PostButton({
         actual_bid,
       });
       const newPost = response.data;
-      console.log(newPost);
-      postType ? setSalesUserData([...salesUserData, newPost]) : setAuctionsUserData([...auctionsUserData, newPost]);
+      console.log("Success: ", newPost);
       return newPost;
     } catch (error) {
       console.log(postType);
-      console.error("Error:", error.response.data);
+      console.error("Error: ", error.response.data);
     }
   };
 
