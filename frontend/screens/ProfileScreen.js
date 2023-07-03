@@ -66,6 +66,7 @@ const ProfileScreen = () => {
         );
         const profileData = response.data;
         setProfileData(profileData);
+        console.log(profileData);
       } catch (error) {
         console.log(error);
       }
@@ -89,6 +90,10 @@ const ProfileScreen = () => {
     fetchBidsData();
   }, []);
 
+  if (!profileData) {
+    return null; // Render null or a loading indicator while data is being fetched
+  }
+
   const handleLayout = (event) => {
     const { width } = event.nativeEvent.layout;
     setViewWidth(width);
@@ -105,7 +110,7 @@ const ProfileScreen = () => {
       </Modal>
       <View className="items-center pb-4" style={styles.container}>
         <Text className="text-slate-100 text-base font-bold my-3">
-          afileData.nickname
+          {profileData.nickname}
         </Text>
         <Pressable
           onPress={() => {
@@ -121,7 +126,7 @@ const ProfileScreen = () => {
         <Avatar
           rounded
           source={{
-            uri: "https://cdn.discordapp.com/attachments/732360655658680452/1118248308213821491/ghj.png",
+            uri: profileData.profilePic,
           }}
           size="large"
         />

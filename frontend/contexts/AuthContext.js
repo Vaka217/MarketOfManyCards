@@ -43,13 +43,14 @@ const clearErrorMessage = (dispatch) => () => {
 
 const signup =
   (dispatch) =>
-  async ({ email, password, nickname, contact, navigation }) => {
+  async ({ email, password, nickname, contact, profilePic, navigation }) => {
     try {
       const response = await axios.post("http://18.229.90.36:3000/signup", {
         email,
         password,
         nickname,
         contact,
+        profilePic
       });
       await AsyncStorage.setItem("token", response.data.token);
       await AsyncStorage.setItem("userId", String(response.data.userId));

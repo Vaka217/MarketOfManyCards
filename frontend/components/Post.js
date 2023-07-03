@@ -26,6 +26,7 @@ const Post = ({ post, card, user, type, isUser }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [isEndVisible, setIsEndVisible] = useState(false);
   const { setSalesUserData, setAuctionsUserData, salesUserData, auctionsUserData } = useContext(InfoContext);
   const [bidAmount, setBidAmount] = useState(post.actual_bid);
   const {state} = useContext(AuthContext);
@@ -68,9 +69,9 @@ const Post = ({ post, card, user, type, isUser }) => {
 
 
 
-  const handleWhatsappPress = (message) => {
+  const handleWhatsappPress = ({ message, phone }) => {
 
-    const url = `https://api.whatsapp.com/send?phone=${user.contact}&text=${encodeURIComponent(
+    const url = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(
       message
     )}`;
 
@@ -91,6 +92,15 @@ const Post = ({ post, card, user, type, isUser }) => {
       console.log("Bid creada con éxito");
     } catch (error) {
       console.log(error.message);
+    }
+  }
+
+  const handleHighestBid = async () => {
+    try {
+      const response = await axios.get(`http://18.229.90.36:3000/searchauctionwinners/${post.id}`);
+      return response.data;
+    } catch (error) {
+      console.log(error);
     }
   }
 
@@ -204,7 +214,7 @@ const Post = ({ post, card, user, type, isUser }) => {
                               }}
                               onPress={() => {
                                 if (type == "Sales") {
-                                  handleWhatsappPress(`Hi ${user.nickname}, I contact you for buying ${post.quantity} of your ${card.name} sale.`);
+                                  handleWhatsappPress({ message: `Hi ${user.nickname}, I contact you for buying ${post.quantity} of your ${card.name} sale.`, phone: user.contact });
                                 } else {
                                   handleBid();
                                 }
@@ -255,9 +265,56 @@ const Post = ({ post, card, user, type, isUser }) => {
                           <Text className="text-xl font-bold text-slate-100 text-center flex-1 bg-sky-900 h-10 p-1 rounded-lg mr-1">
                             {post.quantity}
                           </Text>
-                        <Pressable style={{flex: 1}} onPress={() => {setIsEditModalVisible(!isEditModalVisible)}}>
+                        <Pressable style={{flex: 1}} onPress={() => {setIsEndVisible(!isEndVisible)}}>
                           <FontAwesome name="money" size={24} color="rgb(241 245 249)" style={{flex: 1, backgroundColor: "rgb(21 128 61)", height: "100%", textAlign: "center", verticalAlign: "middle", borderRadius: 8}} />
                         </Pressable>
+                        <Modal transparent={true} visible={isEndVisible} className="flex-1" >
+                        <View className="rounded-b-lg flex-1 justify-center" style={{backgroundColor: "rgba(0, 0, 0, 0.5)"}}>
+                          <View className="bg-sky-900 p-2 m-8 rounded-lg items-center max-h-96">
+                            <Text className="text-xl font-bold text-slate-100 text-center my-3">You are going to contact the highest bidder in this auction, do you wish to proceed?</Text>
+                            <Button
+                              title="Confirm"
+                              loading={false}
+                              loadingProps={{ size: "small", color: "white" }}
+                              buttonStyle={{
+                                backgroundColor: "green",
+                                borderRadius: 5,
+                              }}
+                              titleStyle={{ fontWeight: "bold", fontSize: 24 }}
+                              containerStyle={{
+                                height: 50,
+                                width: 200,
+                                justifyContent: "center",
+                                marginBottom: 12
+                              }}
+                              onPress={() => {
+                                const highestBid = handleHighestBid();
+                                handleWhatsappPress({ message: `Hi, you were the user with the highest bid in my x${post.quantity} ${card.name} auction, I'm ${user.nickname}`, phone: highestBid.contact });
+                                setIsEndVisible(!isEndVisible);
+                              }}
+                            />
+                            <Button
+                              title="Cancel"
+                              loading={false}
+                              loadingProps={{ size: "small", color: "white" }}
+                              buttonStyle={{
+                                backgroundColor: "red",
+                                borderRadius: 5,
+                              }}
+                              titleStyle={{ fontWeight: "bold", fontSize: 24 }}
+                              containerStyle={{
+                                height: 50,
+                                width: 200,
+                                justifyContent: "center",
+                                marginBottom: 12
+                              }}
+                              onPress={() => {
+                                setIsEndVisible(!isEndVisible);
+                              }}
+                            />
+                          </View>
+                        </View>
+                      </Modal>
                         </View>
                         )}
                         <View className="flex-1 flex-row">

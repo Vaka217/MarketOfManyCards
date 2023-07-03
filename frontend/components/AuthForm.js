@@ -5,6 +5,8 @@ import { Input, Text, Button } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 import useDebounce from "../hooks/useDebounce";
 import { useEffect } from "react";
+import randomColor from 'randomcolor';
+import axios from 'axios';
 
 const AuthForm = ({ headerText, submitButtonText, onSubmit, errorMessage }) => {
   const [nickname, setNickname] = useState("");
@@ -38,7 +40,8 @@ const AuthForm = ({ headerText, submitButtonText, onSubmit, errorMessage }) => {
   }, [debouncedNickname]);
 
   const handlePress = () => {
-    onSubmit({ email, password, nickname, contact, navigation });
+    const profilePic = `https://api.multiavatar.com/${nickname}.png`;
+    onSubmit({ email, password, nickname, contact, navigation, profilePic });
     setNickname("");
     setEmail("");
     setPassword("");
