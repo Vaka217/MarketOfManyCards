@@ -4,7 +4,7 @@ const auctionController = require("../controllers/auctionController");
 
 router.post("/createauction", auctionController.createAuction);
 router.post("/makebid", auctionController.makeBid);
-router.get("/searchauctionwinners", auctionController.searchAuctionWinners);
+router.get("/searchauctionwinners/:id", auctionController.searchAuctionWinners);
 router.get("/searchauctions", auctionController.searchAuctions);
 router.get("/searchauction/:id", auctionController.searchAuctionById);
 router.get("/searchauctionbycard/:id", auctionController.searchAuctionBycard);

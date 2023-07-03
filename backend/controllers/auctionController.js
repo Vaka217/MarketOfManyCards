@@ -158,7 +158,7 @@ const makeBid = async (req, res) => {
 };
 
 const searchAuctionWinners = async (req, res) => {
-const {auction_id} = req.body;
+const {auction_id} = req.params;
 
 // Verificar si la subasta existe
 const auction = await Auction.findByPk(auction_id);

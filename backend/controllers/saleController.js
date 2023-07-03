@@ -223,6 +223,45 @@ const searchSaleByCard = async (req, res) => {
     res.status(500).json({ error: "Error al obtener las ventas" });
   }
 };
+
+const updateSale = async (req, res) => {
+  const { id, price, description, quantity, condition } = req.body;
+
+  // Antes de la validación de datos existente
+if (!id || !price || !description || quantity === undefined || !condition) {
+  return res.status(400).json({ error: "Por favor, completa todos los campos obligatorios" });
+}
+  try {
+    // Actualiza la subasta en la base de datos
+    const post = await Sale.findByPk(id);
+    if (!post) {
+      return res.status(404).json({ error: "Subasta no encontrada" });
+    }
+
+    post.price = price;
+    post.description = description;
+    post.quantity = quantity;
+    post.condition = condition;
+
+    if (quantity === 0) {
+      // Eliminar la subasta si la cantidad es 0
+      await post.destroy();
+      return res.status(200).json({ error: "Subasta eliminada" });
+    } else {
+      // Guardar los cambios en la subasta
+      await post.save();
+    }
+
+    return res.json("Venta actualizada");
+
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ error: "Ha ocurrido un error al actualizar la subasta" });
+  }
+};
+
   // Sirve para aumentar/disminuir la cantidad de la venta asi como para eliminarla
   const updateSaleQuantity = async (req, res) => {
     const { quantity } = req.body;
@@ -273,6 +312,7 @@ const searchSaleByCard = async (req, res) => {
 module.exports = {
     createSale,
     searchSale,
+    updateSale,
     searchSaleById,
     searchSaleByCard,
     updateSaleQuantity,
