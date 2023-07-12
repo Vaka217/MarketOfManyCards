@@ -28,16 +28,16 @@ export function PostButton({
     );
   };
   const generatePost = () => {
-    if (price === "" || description === "" || cardQuantity === "" || cardQuality === "" || post === "") {
+    if (price === "" || description === "" || cardQuantity === "" || cardQuality === "" || post === "" ) {
       showWarning('Cannot create post.', 'Please make sure all the required fields are filled out.');
       return
     }
-    if (cardQuantity.includes("-") === true || cardQuantity.includes(".") === true) {
+    if (cardQuantity.includes("-") === true || cardQuantity.includes(".") === true || cardQuantity === "0") {
       showWarning('Cannot create post.', 'Invalid quantity.');
       return
     }
     let numberOfPeriods = price.split('.').length - 1;
-    if (numberOfPeriods > 1 || price.includes("-") === true || price[0] === '.' || price.endsWith('.') === true) {
+    if (numberOfPeriods > 1 || price.includes("-") === true || price[0] === '.' || price.endsWith('.') === true || price === "0" || price.includes("-")) {
       showWarning('Cannot create post.', 'Invalid price.');
       return
     }

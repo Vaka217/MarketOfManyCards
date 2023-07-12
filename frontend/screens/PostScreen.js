@@ -68,17 +68,17 @@ export default function PostScreen() {
   }, [currentCard]);
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView className="flex-1 bg-sky-900">
       <View
+        className="bg-sky-900"
         style={{
           flex: 1,
-          flexDirection: "row",
           justifyContent: "center",
           alignItems: "center",
-          backgroundColor: "#0269a3",
+          marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
         }}
       >
-        <View style={styles.container}>
+        <View className="bg-sky-950" style={styles.container}>
           <Pressable
             onPress={() => {
               setShowModal(true);
@@ -99,26 +99,23 @@ export default function PostScreen() {
           </Pressable>
         </View>
         <View
+          className="bg-sky-900"
           style={{
             flex: 1,
-            justifyContent: "center",
+            flexDirection: "row",
             alignItems: "center",
-            backgroundColor: "#0269a3",
-            width: "50%",
-            aspectRatio: 0.55,
-            justifyContent: "space-evenly",
+            justifyContent: "center",
           }}
         >
           <View
+            className="bg-sky-950"
             style={{
               flex: 1,
-              borderRadius: 15,
+              borderRadius: 10,
               alignItems: "center",
               margin: "1%",
-              marginRight: "5%",
               justifyContent: "center",
-              backgroundColor: "rgb(12, 74, 110)",
-              aspectRatio: 1.5,
+              aspectRatio: 1.75,
             }}
           >
             <Input
@@ -130,6 +127,7 @@ export default function PostScreen() {
               labelStyle={styles.label}
               inputStyle={styles.input}
               keyboardType={"decimal-pad"}
+              maxLength={8}
               containerStyle={{
                 alignItems: "center",
                 justifyContent: "center",
@@ -138,15 +136,14 @@ export default function PostScreen() {
             />
           </View>
           <View
+            className="bg-sky-950"
             style={{
               flex: 1,
-              borderRadius: 15,
+              borderRadius: 10,
               margin: "1%",
-              marginRight: "5%",
               alignItems: "center",
               justifyContent: "center",
-              backgroundColor: "rgb(12, 74, 110)",
-              aspectRatio: 1.5,
+              aspectRatio: 1.75,
             }}
           >
             <Input
@@ -158,6 +155,7 @@ export default function PostScreen() {
               labelStyle={styles.label}
               inputStyle={styles.input}
               keyboardType={"decimal-pad"}
+              maxLength={3}
               containerStyle={{
                 alignItems: "center",
                 justifyContent: "center",
@@ -165,19 +163,17 @@ export default function PostScreen() {
               }}
             />
           </View>
-          <Pressable onPress={() => {setIsExpanded(true)}} style={{
+          <Pressable onPress={() => {setIsExpanded(true)}} className="bg-sky-950" style={{
                 flex: 1,
-                borderRadius: 15,
+                borderRadius: 10,
                 margin: "1%",
-                marginRight: "5%",
                 alignItems: "center",
-                backgroundColor: "rgb(12, 74, 110)",
-                aspectRatio: 1.5,
+                aspectRatio: 1.75,
               }}>
-                <Text style={{ color: "rgb(241, 245, 249)", fontSize: 16, fontWeight: "bold", marginTop: "8%" }}>
+                <Text style={{ color: "rgb(241, 245, 249)", fontSize: 16, fontWeight: "bold" }}>
                   Quality
                 </Text>
-              <Text style={{ color: "rgb(241, 245, 249)", fontSize: 15, fontWeight: "bold", fontStyle: "italic", textAlign: "center", marginTop: "8%"}}>
+              <Text style={{ color: "rgb(241, 245, 249)", fontSize: 15, fontWeight: "bold", fontStyle: "italic", textAlign: "center", marginTop: "8%" }}>
                 {cardQuality}
               </Text>
           </Pressable>
@@ -190,22 +186,21 @@ export default function PostScreen() {
           setCurrentCard={setCurrentCard}
         />
       </View>
-      <View style={{ flex: 1, backgroundColor: "#0269a3" }}>
-        <View
+      <View style={{ flex: 1 }} className="bg-sky-900">
+        <View className="bg-sky-900"
           style={{
             flex: 2,
             flexDirection: "row",
-            backgroundColor: "#0269a3",
           }}
         >
           <View
+            className="bg-sky-950"
             style={{
               flex: 3,
               borderRadius: 15,
               margin: 10,
               alignItems: "center",
               justifyContent: "center",
-              backgroundColor: "rgb(12, 74, 110)",
             }}
           >
             <TextInput
@@ -226,15 +221,15 @@ export default function PostScreen() {
             ></TextInput>
           </View>
         </View>
-        <View style={{ flex: 1, backgroundColor: "#0269a3" }}>
+        <View style={{ flex: 0.6 }} className="bg-sky-900">
           <View style={{ flex: 1 }}>
             <SaleAuctionSlider isSale={isSale} setIsSale={setIsSale} />
           </View>
         </View>
         <View
+          className="bg-sky-900"
           style={{
             flex: 1,
-            backgroundColor: "#0269a3",
             justifyContent: "center",
             alignItems: "center",
           }}
@@ -278,11 +273,10 @@ export default function PostScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    marginLeft: "2%",
-    marginRight: "2%",
+    flex: 3,
+    margin: "2%",
     width: "50%",
     borderRadius: 12,
-    backgroundColor: "rgb(12, 74, 110)",
     aspectRatio: 2.5 / 3.5,
     overflow: "hidden",
   },
@@ -328,6 +322,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   label: {
+    marginTop: "10%",
     color: "rgb(241, 245, 249)",
   },
   input: {

@@ -26,8 +26,8 @@ export function SaleAuctionSlider( {isSale, setIsSale} ) {
 const styles = StyleSheet.create({
     sliderBackground: {
         borderRadius: 180,
-        width: '80%',
-        backgroundColor: "rgb(12, 74, 110)",
+        width: '65%',
+        backgroundColor: "rgb(8, 47, 73)",
         aspectRatio: 6/1
     },
     sliderButtonAuction: {

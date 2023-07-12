@@ -85,8 +85,9 @@ export function CardAddMenu({
       transparent={true}
       style={styles.centeredView}
     >
-      <View style={styles.modalView} className="bg-slate-800">
-        <View className="flex-row">
+      <View style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+      <View style={styles.modalView} className="bg-sky-900">
+        <View className="flex-row m-1">
           <SearchBar
             clicked={clicked}
             setClicked={setClicked}
@@ -104,24 +105,14 @@ export function CardAddMenu({
           keyExtractor={(item) => item.id}
         /> ) : (
           <ScrollView showsVerticalScrollIndicator={false}>
-          <HomeSkeleton chosenColor={"rgb(30, 41, 59)"} cardHeight={110} textWidth={150} textHeight={30}/>
+          <HomeSkeleton chosenColor={"rgb(12, 74, 110)"} cardHeight={110} textWidth={150} textHeight={30}/>
           </ScrollView>
         )}
         </View>
-        <View
-          style={{
-            borderRadius: 25,
-            marginTop: 5,
-            width: 150,
-            alignItems: "center",
-            flexDirection: "row",
-          }}
-          className="bg-sky-700"
-        >
-          <Pressable onPress={closing} className="flex-1 p-4 items-center">
+          <Pressable onPress={closing} className="items-center justify-center mt-5" style={{ borderRadius: 20, width: "35%", backgroundColor: 'rgb(249, 115, 22)', aspectRatio: 2}}>
             <Text className="text-slate-100">Close</Text>
           </Pressable>
-        </View>
+      </View>
       </View>
     </Modal>
   );
@@ -129,7 +120,6 @@ export function CardAddMenu({
 
 const styles = StyleSheet.create({
   container7: {
-    paddingBottom: 0,
     width: 300,
   },
   centeredView: {
@@ -137,13 +127,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 22,
-    backgroundColor: "blue",
   },
   modalView: {
     margin: 20,
     marginTop: "25%",
     borderRadius: 20,
-    padding: 35,
+    padding: 20,
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {
@@ -151,5 +140,6 @@ const styles = StyleSheet.create({
       height: 2,
     },
     height: "75%",
+    justifyContent: "center"
   },
 });

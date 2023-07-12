@@ -10,16 +10,16 @@ import { useState, useEffect } from "react";
 
 export function SingleCardManager({ item, handleContentSizeChange, addCard }) {
   return (
-    <View style={styles.container6} key={item.name} className="bg-sky-700">
+    <View style={styles.container6} key={item.name} className="bg-slate-100 rounded-lg shadow-md shadow-black p-1.5">
       <Pressable style={styles.container4} onPress={() => addCard(item)}>
         <View style={styles.container4}>
-          <View style={{ flex: 1, backgroundColor: "red" }}>
+          <View style={{ flex: 1 }}>
             <Image source={{ uri: item.image }} style={styles.image2} />
           </View>
           <View
             style={{ flex: 2, alignItems: "center", justifyContent: "center" }}
           >
-            <Text className="text-slate-100">{item.name}</Text>
+            <Text className="text-slate-100 bg-sky-900 rounded-lg p-1 mx-1 self-start" numberOfLines={3}>{item.name}</Text>
           </View>
           <View
             style={{
