@@ -7,7 +7,7 @@ import {
   Modal,
   StyleSheet,
   Text,
-  ScrollView
+  ScrollView,
 } from "react-native";
 import SearchBar from "./SearchBar.js";
 import { useState, useEffect } from "react";
@@ -85,34 +85,49 @@ export function CardAddMenu({
       transparent={true}
       style={styles.centeredView}
     >
-      <View style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
-      <View style={styles.modalView} className="bg-sky-900">
-        <View className="flex-row m-1">
-          <SearchBar
-            clicked={clicked}
-            setClicked={setClicked}
-            searchTerm={term}
-            setSearchTerm={(newTerm) => setTerm(newTerm)}
-          />
-        </View>
-        <View style={{ flex: 1, flexDirection: "row" }}>
-        {isLoading === false ? (
-        <FlatList
-          showsVerticalScrollIndicator={false}
-          data={cards}
-          contentContainerStyle={styles.container7}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-        /> ) : (
-          <ScrollView showsVerticalScrollIndicator={false}>
-          <HomeSkeleton chosenColor={"rgb(12, 74, 110)"} cardHeight={110} textWidth={150} textHeight={30}/>
-          </ScrollView>
-        )}
-        </View>
-          <Pressable onPress={closing} className="items-center justify-center mt-5" style={{ borderRadius: 20, width: "35%", backgroundColor: 'rgb(249, 115, 22)', aspectRatio: 2}}>
+      <View style={{ backgroundColor: "rgba(0, 0, 0, 0.5)", flex: 1 }}>
+        <View style={styles.modalView} className="bg-sky-900">
+          <View className="flex-row m-1">
+            <SearchBar
+              clicked={clicked}
+              setClicked={setClicked}
+              searchTerm={term}
+              setSearchTerm={(newTerm) => setTerm(newTerm)}
+            />
+          </View>
+          <View style={{ flex: 1, flexDirection: "row" }}>
+            {isLoading === false ? (
+              <FlatList
+                showsVerticalScrollIndicator={false}
+                data={cards}
+                contentContainerStyle={styles.container7}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.id}
+              />
+            ) : (
+              <ScrollView showsVerticalScrollIndicator={false}>
+                <HomeSkeleton
+                  chosenColor={"rgb(12, 74, 110)"}
+                  cardHeight={110}
+                  textWidth={150}
+                  textHeight={30}
+                />
+              </ScrollView>
+            )}
+          </View>
+          <Pressable
+            onPress={closing}
+            className="items-center justify-center mt-5"
+            style={{
+              borderRadius: 20,
+              width: "35%",
+              backgroundColor: "rgb(249, 115, 22)",
+              aspectRatio: 2,
+            }}
+          >
             <Text className="text-slate-100">Close</Text>
           </Pressable>
-      </View>
+        </View>
       </View>
     </Modal>
   );
@@ -126,7 +141,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 22,
+    borderWidth: 4,
   },
   modalView: {
     margin: 20,
@@ -140,6 +155,6 @@ const styles = StyleSheet.create({
       height: 2,
     },
     height: "75%",
-    justifyContent: "center"
+    justifyContent: "center",
   },
 });

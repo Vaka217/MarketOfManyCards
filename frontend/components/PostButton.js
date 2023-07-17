@@ -1,8 +1,17 @@
 //import { useEffect, useState } from '@react-navigation/native';
-import { Pressable, Text, View, StyleSheet, Modal, Animated, Alert } from "react-native";
+import {
+  Pressable,
+  Text,
+  View,
+  StyleSheet,
+  Modal,
+  Animated,
+  Alert,
+} from "react-native";
 import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { Context as AuthContext } from "../contexts/AuthContext";
+import { InfoContext } from "../contexts/InfoContext";
 
 export function PostButton({
   post,
@@ -14,6 +23,7 @@ export function PostButton({
   cardQuantity,
 }) {
   const { state } = useContext(AuthContext);
+  const { salesData, setSalesData } = useContext(InfoContext);
   const [postCheck, setPostCheck] = useState(false);
   const showWarning = (alertTitle, alertMessage) => {
     Alert.alert(
@@ -21,25 +31,45 @@ export function PostButton({
       alertMessage,
       [
         {
-          text: 'OK',
+          text: "OK",
         },
       ],
       { cancelable: false }
     );
   };
   const generatePost = () => {
-    if (price === "" || description === "" || cardQuantity === "" || cardQuality === "" || post === "" ) {
-      showWarning('Cannot create post.', 'Please make sure all the required fields are filled out.');
-      return
+    if (
+      price === "" ||
+      description === "" ||
+      cardQuantity === "" ||
+      cardQuality === "" ||
+      post === ""
+    ) {
+      showWarning(
+        "Cannot create post.",
+        "Please make sure all the required fields are filled out."
+      );
+      return;
     }
-    if (cardQuantity.includes("-") === true || cardQuantity.includes(".") === true || cardQuantity === "0") {
-      showWarning('Cannot create post.', 'Invalid quantity.');
-      return
+    if (
+      cardQuantity.includes("-") === true ||
+      cardQuantity.includes(".") === true ||
+      cardQuantity === "0"
+    ) {
+      showWarning("Cannot create post.", "Invalid quantity.");
+      return;
     }
-    let numberOfPeriods = price.split('.').length - 1;
-    if (numberOfPeriods > 1 || price.includes("-") === true || price[0] === '.' || price.endsWith('.') === true || price === "0" || price.includes("-")) {
-      showWarning('Cannot create post.', 'Invalid price.');
-      return
+    let numberOfPeriods = price.split(".").length - 1;
+    if (
+      numberOfPeriods > 1 ||
+      price.includes("-") === true ||
+      price[0] === "." ||
+      price.endsWith(".") === true ||
+      price === "0" ||
+      price.includes("-")
+    ) {
+      showWarning("Cannot create post.", "Invalid price.");
+      return;
     }
     let saleObject = {
       price: price,
@@ -80,7 +110,7 @@ export function PostButton({
     postType === true
       ? createPost(saleObject, routeToPostTo)
       : createPost(auctionObject, routeToPostTo);
-    showWarning('Posted!', 'Your post has been succesfully created.');
+    showWarning("Posted!", "Your post has been succesfully created.");
   };
   const createPost = async (
     { price, description, quantity, condition, cardData, userId, actual_bid },
@@ -98,6 +128,7 @@ export function PostButton({
       });
       const newPost = response.data;
       console.log("Success: ", newPost);
+      setSalesData([...salesData, newPost]);
       return newPost;
     } catch (error) {
       console.log(postType);

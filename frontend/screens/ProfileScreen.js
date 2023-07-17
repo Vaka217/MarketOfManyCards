@@ -10,7 +10,7 @@ import {
   Pressable,
   TouchableWithoutFeedback,
   FlatList,
-  ActivityIndicator
+  ActivityIndicator,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import Post from "../components/Post";
@@ -32,7 +32,13 @@ const ProfileScreen = () => {
   const [isModal, setIsModal] = useState(false);
   const { state, signout } = useContext(AuthContext);
   const [profileData, setProfileData] = useState();
-  const {salesUserData, auctionsUserData, setSalesUserData, setAuctionsUserData} = useContext(InfoContext);
+  const {
+    salesUserData,
+    auctionsUserData,
+    setSalesUserData,
+    setAuctionsUserData,
+    salesData,
+  } = useContext(InfoContext);
   const [bidsData, setBidsData] = useState(null);
   const navigation = useNavigation();
 
@@ -90,14 +96,25 @@ const ProfileScreen = () => {
     fetchSalesData();
     fetchAuctionsData();
     fetchBidsData();
-  }, []);
+  }, [salesData]);
 
   if (!profileData) {
     return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "rgb(12, 74, 110)" }}>
-      <ActivityIndicator size={"large"} color={"rgb(241, 245, 249)"} style={{ transform: [{ scaleX: 2 }, { scaleY: 2 }] }} />
-    </View>
-    )
+      <View
+        style={{
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "rgb(12, 74, 110)",
+        }}
+      >
+        <ActivityIndicator
+          size={"large"}
+          color={"rgb(241, 245, 249)"}
+          style={{ transform: [{ scaleX: 2 }, { scaleY: 2 }] }}
+        />
+      </View>
+    );
   }
 
   const handleLayout = (event) => {
@@ -112,7 +129,11 @@ const ProfileScreen = () => {
   return (
     <SafeAreaView className="flex-1 bg-sky-900">
       <Modal visible={isModal} transparent={true} onRequestClose={toggleModal}>
-        <FormModal isModal={isModal} toggleModal={toggleModal} profileData={profileData} />
+        <FormModal
+          isModal={isModal}
+          toggleModal={toggleModal}
+          profileData={profileData}
+        />
       </Modal>
       <View className="items-center pb-4" style={styles.container}>
         <Text className="text-slate-100 text-base font-bold my-3">
@@ -165,27 +186,41 @@ const ProfileScreen = () => {
             keyExtractor={(item) => item}
             horizontal={true}
             showsHorizontalScrollIndicator={false}
-          />     
+          />
         </View>
         {isPressed != "Bids" ? (
-          !salesUserData || !auctionsUserData ? ( <HomeSkeleton chosenColor={"rgb(3, 105, 161)"} cardHeight={110} textHeight={30} textWidth={225}/> ) : (
+          !salesUserData || !auctionsUserData ? (
+            <HomeSkeleton
+              chosenColor={"rgb(3, 105, 161)"}
+              cardHeight={110}
+              textHeight={30}
+              textWidth={225}
+            />
+          ) : (
+            <FlatList
+              data={isPressed === "Auctions" ? auctionsUserData : salesUserData}
+              renderItem={({ item }) => (
+                <Post {...item} type={isPressed} isUser />
+              )}
+              keyExtractor={(item) => item.post.id}
+              showsVerticalScrollIndicator={false}
+            />
+          )
+        ) : !bidsData ? (
+          <HomeSkeleton
+            chosenColor={"rgb(3, 105, 161)"}
+            cardHeight={110}
+            textHeight={30}
+            textWidth={225}
+          />
+        ) : (
           <FlatList
-            data={isPressed === "Auctions" ? auctionsUserData : salesUserData}
-            renderItem={({ item }) => (
-              <Post {...item} type={isPressed} isUser />
-            )}
+            data={bidsData}
+            renderItem={({ item }) => <Bid {...item} />}
             keyExtractor={(item) => item.post.id}
             showsVerticalScrollIndicator={false}
           />
-        )) : (
-          !bidsData ? ( <HomeSkeleton chosenColor={"rgb(3, 105, 161)"} cardHeight={110} textHeight={30} textWidth={225}/> ) : (
-          <FlatList data={bidsData} renderItem={({ item }) => (
-              <Bid {...item} />
-            )}
-            keyExtractor={(item) => item.post.id}
-            showsVerticalScrollIndicator={false}
-          />
-        ))}
+        )}
       </View>
     </SafeAreaView>
   );
